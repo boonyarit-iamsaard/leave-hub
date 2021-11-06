@@ -1,23 +1,38 @@
 import { FC } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import SendIcon from '@mui/icons-material/Send';
-import { Button, Stack } from '@mui/material';
+// mui
+import { Box } from '@mui/system';
+
+// components
+import Admin from './pages/Admin';
+import Login from './pages/Login';
+import Profile from './pages/Profile';
+import Roster from './pages/Roster';
+import { Layout } from './components/Layout';
 
 const App: FC = () => {
   return (
-    <div>
-      <p>Bangkok Engineering - Leave Hub</p>
-
-      <Stack direction="row" spacing={2} sx={{ p: 2 }}>
-        <Button variant="outlined" startIcon={<DeleteIcon />}>
-          Delete
-        </Button>
-        <Button variant="contained" endIcon={<SendIcon />}>
-          Send
-        </Button>
-      </Stack>
-    </div>
+    <Box sx={{ height: '100vh' }}>
+      <BrowserRouter>
+        <Layout>
+          <Switch>
+            <Route exact path="/">
+              <Profile />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/roster">
+              <Roster />
+            </Route>
+            <Route path="/admin">
+              <Admin />
+            </Route>
+          </Switch>
+        </Layout>
+      </BrowserRouter>
+    </Box>
   );
 };
 
