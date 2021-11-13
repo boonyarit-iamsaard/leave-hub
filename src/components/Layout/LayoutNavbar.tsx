@@ -27,7 +27,7 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
       position="fixed"
       elevation={0}
       sx={{
-        bgcolor: 'white',
+        background: 'white',
         color: 'text.primary',
         width: { lg: `calc(100% - ${drawerWidth}px)` },
         ml: { lg: `${drawerWidth}px` },

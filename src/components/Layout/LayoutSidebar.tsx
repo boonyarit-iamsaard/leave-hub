@@ -5,12 +5,12 @@ import { Drawer } from '@mui/material';
 import { Box } from '@mui/system';
 
 // components
-import LayoutSidenavList from './LayoutSidenavList';
+import LayoutSidebarList from './LayoutSidebarList';
 
 // types
 import { LayoutProps } from './Layout';
 
-const LayoutSidenav: FC<LayoutProps> = ({
+const LayoutSidebar: FC<LayoutProps> = ({
   drawerWidth,
   drawerOpen,
   handleDrawerToggle,
@@ -37,7 +37,7 @@ const LayoutSidenav: FC<LayoutProps> = ({
           },
         }}
       >
-        <LayoutSidenavList handleDrawerToggle={handleDrawerToggle} />
+        <LayoutSidebarList handleDrawerToggle={handleDrawerToggle} />
       </Drawer>
 
       <Drawer
@@ -51,10 +51,10 @@ const LayoutSidenav: FC<LayoutProps> = ({
         }}
         open
       >
-        <LayoutSidenavList handleDrawerToggle={handleDrawerToggle} />
+        <LayoutSidebarList handleDrawerToggle={handleDrawerToggle} />
       </Drawer>
     </Box>
   );
 };
 
-export default LayoutSidenav;
+export default LayoutSidebar;

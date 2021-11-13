@@ -56,7 +56,7 @@ const ListItemLink: FC<ListItemLinkProps> = ({
   );
 };
 
-const LayoutSidenavList: FC<{ handleDrawerToggle: () => void }> = ({
+const LayoutSidebarList: FC<{ handleDrawerToggle: () => void }> = ({
   handleDrawerToggle,
 }) => {
   const listItems: ListItemLinkProps[] = [
@@ -105,4 +105,4 @@ const LayoutSidenavList: FC<{ handleDrawerToggle: () => void }> = ({
   );
 };
 
-export default LayoutSidenavList;
+export default LayoutSidebarList;
