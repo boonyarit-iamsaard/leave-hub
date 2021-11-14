@@ -8,6 +8,9 @@ import { CssBaseline, Toolbar, useTheme } from '@mui/material';
 import LayoutNavbar from './LayoutNavbar';
 import LayoutSidebar from './LayoutSidebar';
 
+// context
+import { useAuthContext } from '../../hooks/useAuthContext';
+
 // interfaces
 export interface LayoutProps {
   drawerWidth: number;
@@ -17,6 +20,10 @@ export interface LayoutProps {
 
 const Layout: FC<ReactNode> = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const {
+    state: { user },
+  } = useAuthContext();
+
   const theme = useTheme();
   const drawerWidth = 240;
 
@@ -29,17 +36,21 @@ const Layout: FC<ReactNode> = ({ children }) => {
       <CssBaseline />
 
       {/* Navbar */}
-      <LayoutNavbar
-        drawerWidth={drawerWidth}
-        drawerOpen={drawerOpen}
-        handleDrawerToggle={handleDrawerToggle}
-      />
+      {user && (
+        <LayoutNavbar
+          drawerWidth={drawerWidth}
+          drawerOpen={drawerOpen}
+          handleDrawerToggle={handleDrawerToggle}
+        />
+      )}
 
-      <LayoutSidebar
-        drawerWidth={drawerWidth}
-        drawerOpen={drawerOpen}
-        handleDrawerToggle={handleDrawerToggle}
-      />
+      {user && (
+        <LayoutSidebar
+          drawerWidth={drawerWidth}
+          drawerOpen={drawerOpen}
+          handleDrawerToggle={handleDrawerToggle}
+        />
+      )}
 
       {/* Main content */}
       <Box

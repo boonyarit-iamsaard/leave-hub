@@ -18,9 +18,19 @@ import { LayoutProps } from './Layout';
 // components
 import LayoutTitle from './LayoutTitle';
 
+// hooks
+// custom hooks
+import useLogout from '../../hooks/useLogout';
+
 const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
+  const { logout } = useLogout();
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('lg'));
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <AppBar
@@ -49,7 +59,9 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
         </Box>
 
         <Box>
-          <Button sx={{ color: 'text.secondary' }}>Logout</Button>
+          <Button onClick={handleLogout} sx={{ color: 'text.secondary' }}>
+            Logout
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
