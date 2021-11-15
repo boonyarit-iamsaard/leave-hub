@@ -2,13 +2,15 @@ import { FC, ReactNode } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 // mui
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { Box } from '@mui/system';
+import { LocalizationProvider } from '@mui/lab';
 
 // components
-import Admin from './pages/Admin';
-import Login from './pages/Login';
-import Profile from './pages/Profile';
-import Roster from './pages/Roster';
+import AdminPage from './pages/AdminPage';
+import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/ProfilePage';
+import RosterPage from './pages/RosterPage';
 import { Layout } from './components/Layout';
 
 // context
@@ -49,31 +51,33 @@ const App: FC = () => {
   } = useAuthContext();
 
   return (
-    <Box sx={{ height: '100vh' }}>
-      {isAuthenticationReady && (
-        <BrowserRouter>
-          <Layout>
-            <Switch>
-              <ProtectedRoute exact={true} path="/">
-                <Profile />
-              </ProtectedRoute>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Box sx={{ height: '100vh' }}>
+        {isAuthenticationReady && (
+          <BrowserRouter>
+            <Layout>
+              <Switch>
+                <ProtectedRoute exact={true} path="/">
+                  <ProfilePage />
+                </ProtectedRoute>
 
-              <Route path="/login">
-                <Login />
-              </Route>
+                <Route path="/login">
+                  <LoginPage />
+                </Route>
 
-              <ProtectedRoute path="/roster">
-                <Roster />
-              </ProtectedRoute>
+                <ProtectedRoute path="/roster">
+                  <RosterPage />
+                </ProtectedRoute>
 
-              <ProtectedRoute path="/admin">
-                <Admin />
-              </ProtectedRoute>
-            </Switch>
-          </Layout>
-        </BrowserRouter>
-      )}
-    </Box>
+                <ProtectedRoute path="/admin">
+                  <AdminPage />
+                </ProtectedRoute>
+              </Switch>
+            </Layout>
+          </BrowserRouter>
+        )}
+      </Box>
+    </LocalizationProvider>
   );
 };
 

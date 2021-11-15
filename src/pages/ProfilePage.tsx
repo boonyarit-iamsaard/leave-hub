@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-const Profile: FC = () => {
+const ProfilePage: FC = () => {
   return (
     <div>
       <p>Profile - Page</p>
@@ -8,4 +8,4 @@ const Profile: FC = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;

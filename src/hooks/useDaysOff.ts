@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 
 import { database } from '../firebase/config';
-import { ref, onChildAdded, onChildChanged, onValue } from 'firebase/database';
+import {
+  ref,
+  onChildAdded,
+  onChildChanged,
+  onChildRemoved,
+  onValue,
+} from 'firebase/database';
 
 export interface IShift {
   id: string;
   uid: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   type: string;
   roster: string;
 }
@@ -24,8 +30,11 @@ const useDaysOff = (): { daysOff: IShift[] } => {
       snapshot => {
         snapshot.forEach(childSnapshot => {
           const dayOff: IShift = {
-            id: childSnapshot.key,
             ...childSnapshot.val(),
+            id: childSnapshot.key,
+            // transform the date from firebase to a date object
+            startDate: new Date(childSnapshot.val().startDate),
+            endDate: new Date(childSnapshot.val().endDate),
           };
 
           daysOff.push(dayOff);
@@ -38,36 +47,45 @@ const useDaysOff = (): { daysOff: IShift[] } => {
       }
     );
 
+    const onDayOffAddedListener = onChildAdded(daysOffRef, dayOff => {
+      const dayOffData: IShift = {
+        ...dayOff.val(),
+        id: dayOff.key,
+        // transform the date from firebase to a date object
+        startDate: new Date(dayOff.val().startDate),
+        endDate: new Date(dayOff.val().endDate),
+      };
+
+      setDaysOff([...daysOff, dayOffData]);
+    });
+
     const onDayOffChangedListener = onChildChanged(daysOffRef, dayOff => {
       const dayOffIndex = daysOff.findIndex(({ id }) => id === dayOff.key);
 
       if (dayOffIndex !== -1) {
         daysOff[dayOffIndex] = {
-          id: dayOff.key,
           ...dayOff.val(),
+          id: dayOff.key,
+          // transform the date from firebase to a date object
+          startDate: new Date(dayOff.val().startDate),
+          endDate: new Date(dayOff.val().endDate),
         };
       }
 
       setDaysOff([...daysOff]);
     });
 
-    const onDayOffAddedListener = onChildAdded(daysOffRef, dayOff => {
-      const dayOffIndex = daysOff.findIndex(({ id }) => id === dayOff.key);
+    const onDayOffRemovedListener = onChildRemoved(daysOffRef, dayOff => {
+      const updatedDaysOff = daysOff.filter(({ id }) => id !== dayOff.key);
 
-      if (dayOffIndex === -1) {
-        daysOff.push({
-          id: dayOff.key,
-          ...dayOff.val(),
-        });
-      }
-
-      setDaysOff([...daysOff]);
+      setDaysOff([...updatedDaysOff]);
     });
 
     return () => {
       daysOffListener();
       onDayOffAddedListener();
       onDayOffChangedListener();
+      onDayOffRemovedListener();
     };
   }, []);
 

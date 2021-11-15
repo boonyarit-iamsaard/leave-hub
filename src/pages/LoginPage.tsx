@@ -35,7 +35,7 @@ const schema = yup
   })
   .required();
 
-const Login: FC = () => {
+const LoginPage: FC = () => {
   const { error, login, isPending } = useLogin();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const history = useHistory();
@@ -189,4 +189,4 @@ const Login: FC = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
