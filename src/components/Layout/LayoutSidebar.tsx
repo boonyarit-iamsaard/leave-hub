@@ -17,6 +17,7 @@ const LayoutSidebar: FC<LayoutProps> = ({
 }) => {
   return (
     <Box
+      className="layout-sidebar"
       component="nav"
       sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
       aria-label="mailbox folders"

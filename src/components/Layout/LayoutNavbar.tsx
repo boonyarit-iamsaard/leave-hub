@@ -34,6 +34,7 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
 
   return (
     <AppBar
+      className="layout-navbar"
       position="fixed"
       elevation={0}
       sx={{

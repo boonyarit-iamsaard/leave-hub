@@ -1,4 +1,4 @@
-import { FC, forwardRef, Fragment, ReactElement, useMemo } from 'react';
+import { FC, forwardRef, ReactElement, useMemo } from 'react';
 import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
@@ -74,7 +74,7 @@ const LayoutSidebarList: FC<{ handleDrawerToggle: () => void }> = ({
     },
   ];
   return (
-    <Fragment>
+    <div className="layout-sidebar_list">
       <Toolbar>
         <LayoutTitle />
       </Toolbar>
@@ -101,7 +101,7 @@ const LayoutSidebarList: FC<{ handleDrawerToggle: () => void }> = ({
           />
         </List>
       </Box>
-    </Fragment>
+    </div>
   );
 };
 

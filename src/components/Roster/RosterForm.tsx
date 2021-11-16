@@ -59,6 +59,7 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
         zIndex: theme => theme.zIndex.drawer + 1,
         backdropFilter: 'blur(3px)',
       }}
+      onClick={handleDialogOpen}
       open={dialogOpen}
     >
       <Card

@@ -52,7 +52,7 @@ const App: FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box sx={{ height: '100vh' }}>
+      <Box className="app" sx={{ height: '100vh' }}>
         {isAuthenticationReady && (
           <BrowserRouter>
             <Layout>

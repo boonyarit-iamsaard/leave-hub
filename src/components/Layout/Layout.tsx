@@ -32,7 +32,10 @@ const Layout: FC<ReactNode> = ({ children }) => {
   };
 
   return (
-    <Box className="layout" sx={{ display: 'flex', height: '100%' }}>
+    <Box
+      className="layout"
+      sx={{ display: 'flex', flexShrink: 0, height: '100%' }}
+    >
       <CssBaseline />
 
       {/* Navbar */}
@@ -54,13 +57,17 @@ const Layout: FC<ReactNode> = ({ children }) => {
 
       {/* Main content */}
       <Box
+        className="layout-content"
         component="main"
         sx={{
           background: theme.palette.grey['100'],
           flexGrow: 1,
           px: 3,
           py: 2,
-          width: { lg: `calc(100% - ${drawerWidth}px)` },
+          width: {
+            xs: '100%',
+            lg: `calc(100% - ${drawerWidth}px)`,
+          },
         }}
       >
         <Toolbar />
