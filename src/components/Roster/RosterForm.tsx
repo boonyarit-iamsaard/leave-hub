@@ -1,16 +1,16 @@
 import { FC } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Box } from '@mui/system';
-import { Backdrop, Button, Card, TextField, Typography } from '@mui/material';
-import { DatePicker } from '@mui/lab';
+import { Backdrop, Button, Card } from '@mui/material';
 
 import { database } from '../../firebase/config';
 import { ref, set } from '@firebase/database';
 
-interface IFormData {
+import { InputDatepicker } from '../Input';
+
+interface IRosterForm {
   startDate: Date;
   endDate: Date;
 }
@@ -19,18 +19,17 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
   handleDialogOpen,
   dialogOpen,
 }) => {
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<IFormData>({
+  const methods = useForm<IRosterForm>({
     defaultValues: {
       startDate: new Date(),
       endDate: new Date(),
     },
   });
+  const { handleSubmit } = methods;
 
-  const handleSubmitRosterForm = (data: IFormData) => {
+  // TODO: add to handleSubmit later
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSubmitRosterForm = (data: IRosterForm) => {
     const uid = 'jG4T6XMZu4X3Cs2sfgprpIvOfzz2';
     const id = uuidv4();
 
@@ -49,6 +48,8 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
       startDate: format(shift.startDate, 'yyyy-MM-dd'),
       endDate: format(shift.endDate, 'yyyy-MM-dd'),
     });
+
+    handleDialogOpen();
   };
 
   return (
@@ -59,70 +60,23 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
         backdropFilter: 'blur(3px)',
       }}
       open={dialogOpen}
-      onClick={handleDialogOpen}
     >
       <Card
         className="shadow"
         style={{ width: '100%', maxWidth: 400 }}
         sx={{ mx: 'auto', mb: 2, p: 2 }}
       >
-        <form onSubmit={handleSubmit(data => handleSubmitRosterForm(data))}>
-          <Box sx={{ mb: 1 }}>
-            <label htmlFor="startDate">
-              <Typography variant="body1">Start Date</Typography>
-            </label>
-          </Box>
-          <Box mb={2}>
-            <Controller
-              name="startDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  value={field.value}
-                  onChange={(date: Date | null) => field.onChange(date)}
-                  renderInput={params => (
-                    <TextField
-                      error={!!errors.startDate}
-                      fullWidth
-                      {...params}
-                      variant="outlined"
-                    />
-                  )}
-                />
-              )}
-            />
-          </Box>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(data => handleSubmitRosterForm(data))}>
+            <InputDatepicker label="Start Date" name="startDate" />
 
-          <Box sx={{ mb: 1 }}>
-            <label htmlFor="endDate">
-              <Typography variant="body1">End Date</Typography>
-            </label>
-          </Box>
-          <Box mb={2}>
-            <Controller
-              name="endDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  value={field.value}
-                  onChange={(date: Date | null) => field.onChange(date)}
-                  renderInput={params => (
-                    <TextField
-                      error={!!errors.endDate}
-                      fullWidth
-                      {...params}
-                      variant="outlined"
-                    />
-                  )}
-                />
-              )}
-            />
-          </Box>
+            <InputDatepicker label="End Date" name="endDate" />
 
-          <Button fullWidth variant="contained" size="large" type="submit">
-            Save
-          </Button>
-        </form>
+            <Button fullWidth variant="contained" size="large" type="submit">
+              Save
+            </Button>
+          </form>
+        </FormProvider>
       </Card>
     </Backdrop>
   );

@@ -32,7 +32,7 @@ const Layout: FC<ReactNode> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box className="layout" sx={{ display: 'flex', height: '100%' }}>
       <CssBaseline />
 
       {/* Navbar */}

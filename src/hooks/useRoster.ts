@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import useDaysOff, { IShift } from './useDaysOff';
+import useRosterHeader from './useRosterHeader';
 
 interface Roster {
   id: string;
@@ -14,11 +15,9 @@ interface Roster {
 }
 
 const useRoster = (year = 2022, month = 0): { roster: Roster[] } => {
+  const { fromDate, toDate } = useRosterHeader(year, month);
   const [roster, setRoster] = useState<Roster[]>([]);
   const { daysOff } = useDaysOff();
-
-  const fromDate = useCallback(() => new Date(year, month, 1), [year, month]);
-  const toDate = useCallback(() => new Date(year, month + 1, 0), [year, month]);
 
   const transformDataToRoster = useCallback(
     (records: IShift[]): Roster[] => {
@@ -47,7 +46,9 @@ const useRoster = (year = 2022, month = 0): { roster: Roster[] } => {
       });
 
       const filteredRoster = roster.filter(
-        recored => recored.date >= fromDate() && recored.date <= toDate()
+        record =>
+          compareAsc(record.date, fromDate()) >= 0 &&
+          compareAsc(record.date, toDate()) <= 0
       );
 
       const sortedRoster = filteredRoster.sort((a, b) =>
