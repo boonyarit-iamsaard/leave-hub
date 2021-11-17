@@ -23,7 +23,10 @@ import { Box } from '@mui/system';
 
 import logo from '../assets/images/logo.png';
 
-import useLogin, { ILoginCredentials } from '../hooks/useLogin';
+import useLogin from '../hooks/useLogin';
+
+// interfaces
+import { Credentials } from '../interfaces/auth.interface';
 
 const schema = yup
   .object({
@@ -47,7 +50,7 @@ const LoginPage: FC = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<ILoginCredentials>({
+  } = useForm<Credentials>({
     defaultValues: {
       email: '',
       password: '',
@@ -63,7 +66,7 @@ const LoginPage: FC = () => {
     event.preventDefault();
   };
 
-  const handleLogin: SubmitHandler<ILoginCredentials> = async data => {
+  const handleLogin: SubmitHandler<Credentials> = async data => {
     const user = await login(data);
 
     if (!user) return;

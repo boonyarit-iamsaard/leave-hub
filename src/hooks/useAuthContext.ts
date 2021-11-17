@@ -1,11 +1,13 @@
 import { Dispatch, useContext } from 'react';
 
-import { AuthContext, IAuthAction } from '../context/AuthContext';
-import { IAuthState } from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
+
+// interfaces
+import { AuthAction, AuthState } from '../interfaces/auth.interface';
 
 export const useAuthContext = (): {
-  state: IAuthState;
-  dispatch: Dispatch<IAuthAction>;
+  state: AuthState;
+  dispatch: Dispatch<AuthAction>;
 } => {
   const context = useContext(AuthContext);
 

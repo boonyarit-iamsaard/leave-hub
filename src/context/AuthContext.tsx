@@ -9,47 +9,38 @@ import {
 
 // firebase
 import { auth } from '../firebase/config';
-import { onAuthStateChanged, User } from '@firebase/auth';
+import { onAuthStateChanged } from '@firebase/auth';
 
-export enum IAuthActionTypes {
-  Login,
-  Logout,
-  SetIsAuthenticationReady,
-}
+// interfaces
+import {
+  AuthAction,
+  AuthActionTypes,
+  AuthState,
+} from '../interfaces/auth.interface';
 
-export interface IAuthState {
-  isAuthenticationReady: boolean;
-  user: User | null;
-}
-
-export interface IAuthAction {
-  type: IAuthActionTypes;
-  payload: User | null;
-}
-
-const initialAuthState: IAuthState = {
+const initialAuthState: AuthState = {
   isAuthenticationReady: false,
   user: null,
 };
 
 export const AuthContext = createContext<{
-  state: IAuthState;
-  dispatch: Dispatch<IAuthAction>;
+  state: AuthState;
+  dispatch: Dispatch<AuthAction>;
 }>({
   state: initialAuthState,
   dispatch: () => null,
 });
 
 export const authReducer = (
-  state: IAuthState,
-  action: IAuthAction
-): IAuthState => {
+  state: AuthState,
+  action: AuthAction
+): AuthState => {
   switch (action.type) {
-    case IAuthActionTypes.SetIsAuthenticationReady:
+    case AuthActionTypes.SetIsAuthenticationReady:
       return { user: action.payload, isAuthenticationReady: true };
-    case IAuthActionTypes.Login:
+    case AuthActionTypes.Login:
       return { ...state, user: action.payload };
-    case IAuthActionTypes.Logout:
+    case AuthActionTypes.Logout:
       return { ...state, user: null };
     default:
       return state;
@@ -62,7 +53,7 @@ export const AuthContextProvider: FC<ReactNode> = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       dispatch({
-        type: IAuthActionTypes.SetIsAuthenticationReady,
+        type: AuthActionTypes.SetIsAuthenticationReady,
         payload: user,
       });
 

@@ -12,21 +12,21 @@ import {
   Divider,
 } from '@mui/material';
 
+// firebase
 import { database } from '../../firebase/config';
 import { ref, set } from '@firebase/database';
 
+// components
 import { InputDatepicker } from '../Input';
 
-interface IRosterForm {
-  startDate: Date;
-  endDate: Date;
-}
+// interfaces
+import { RosterFormData } from '../../interfaces/roster.interface';
 
 const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
   handleDialogOpen,
   dialogOpen,
 }) => {
-  const methods = useForm<IRosterForm>({
+  const methods = useForm<RosterFormData>({
     defaultValues: {
       startDate: new Date(),
       endDate: new Date(),
@@ -34,7 +34,7 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
   });
   const { handleSubmit } = methods;
 
-  const handleSubmitRosterForm = (data: IRosterForm) => {
+  const handleSubmitRosterForm = (data: RosterFormData) => {
     const uid = 'jG4T6XMZu4X3Cs2sfgprpIvOfzz2';
     const id = uuidv4();
 

@@ -2,17 +2,11 @@ import { addDays, compareAsc } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import useDaysOff, { IShift } from './useDaysOff';
+import useDaysOff from './useDaysOff';
 import useRosterHeader from './useRosterHeader';
 
-interface Roster {
-  id: string;
-  shiftId: string;
-  uid: string;
-  date: Date;
-  type: string;
-  roster: string;
-}
+// interfaces
+import { Roster, Shift } from '../interfaces/roster.interface';
 
 const useRoster = (year = 2022, month = 0): { roster: Roster[] } => {
   const { fromDate, toDate } = useRosterHeader(year, month);
@@ -20,7 +14,7 @@ const useRoster = (year = 2022, month = 0): { roster: Roster[] } => {
   const { daysOff } = useDaysOff();
 
   const transformDataToRoster = useCallback(
-    (records: IShift[]): Roster[] => {
+    (records: Shift[]): Roster[] => {
       const roster: Roster[] = [];
 
       records.forEach(record => {

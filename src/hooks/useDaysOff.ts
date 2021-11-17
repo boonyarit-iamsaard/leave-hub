@@ -9,27 +9,21 @@ import {
   onValue,
 } from 'firebase/database';
 
-export interface IShift {
-  id: string;
-  uid: string;
-  startDate: Date;
-  endDate: Date;
-  type: string;
-  roster: string;
-}
+// interfaces
+import { Shift } from '../interfaces/roster.interface';
 
-const useDaysOff = (): { daysOff: IShift[] } => {
-  const [daysOff, setDaysOff] = useState<IShift[]>([]);
+const useDaysOff = (): { daysOff: Shift[] } => {
+  const [daysOff, setDaysOff] = useState<Shift[]>([]);
 
   useEffect(() => {
-    const daysOff: IShift[] = [];
+    const daysOff: Shift[] = [];
     const daysOffRef = ref(database, 'days-off');
 
     const daysOffListener = onValue(
       daysOffRef,
       snapshot => {
         snapshot.forEach(childSnapshot => {
-          const dayOff: IShift = {
+          const dayOff: Shift = {
             ...childSnapshot.val(),
             id: childSnapshot.key,
             // transform the date from firebase to a date object
@@ -48,7 +42,7 @@ const useDaysOff = (): { daysOff: IShift[] } => {
     );
 
     const onDayOffAddedListener = onChildAdded(daysOffRef, dayOff => {
-      const dayOffData: IShift = {
+      const dayOffData: Shift = {
         ...dayOff.val(),
         id: dayOff.key,
         // transform the date from firebase to a date object
