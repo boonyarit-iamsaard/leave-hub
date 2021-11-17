@@ -5,7 +5,7 @@ import { auth } from '../firebase/config';
 import { signInWithEmailAndPassword, AuthError, User } from 'firebase/auth';
 
 // context
-import { useAuthContext } from './useAuthContext';
+import useAuthContext from './useAuthContext';
 
 // interfaces
 import { AuthActionTypes, Credentials } from '../interfaces/auth.interface';

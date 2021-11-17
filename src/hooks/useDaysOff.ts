@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { database } from '../firebase/config';
+import { realtimeDatabase } from '../firebase/config';
 import {
   ref,
   onChildAdded,
@@ -17,7 +17,7 @@ const useDaysOff = (): { daysOff: Shift[] } => {
 
   useEffect(() => {
     const daysOff: Shift[] = [];
-    const daysOffRef = ref(database, 'days-off');
+    const daysOffRef = ref(realtimeDatabase, 'days-off');
 
     const daysOffListener = onValue(
       daysOffRef,

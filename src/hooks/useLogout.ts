@@ -3,7 +3,7 @@ import { auth } from '../firebase/config';
 import { signOut } from 'firebase/auth';
 
 // context
-import { useAuthContext } from './useAuthContext';
+import useAuthContext from './useAuthContext';
 
 // interfaces
 import { AuthActionTypes } from '../interfaces/auth.interface';

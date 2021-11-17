@@ -110,7 +110,6 @@ const LoginPage: FC = () => {
               render={({ field }) => (
                 <OutlinedInput
                   disabled={isPending}
-                  size="small"
                   sx={{
                     backgroundColor: 'grey.100',
                   }}
@@ -140,7 +139,6 @@ const LoginPage: FC = () => {
               render={({ field }) => (
                 <OutlinedInput
                   disabled={isPending}
-                  size="small"
                   sx={{
                     backgroundColor: 'grey.100',
                   }}

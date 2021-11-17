@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { FC, useEffect } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,50 +13,92 @@ import {
 } from '@mui/material';
 
 // firebase
-import { database } from '../../firebase/config';
+import { realtimeDatabase } from '../../firebase/config';
 import { ref, set } from '@firebase/database';
 
 // components
-import { InputDatepicker } from '../Input';
+import { InputDatepicker, InputSelect } from '../Input';
 
 // interfaces
-import { RosterFormData } from '../../interfaces/roster.interface';
+import {
+  RosterFormData,
+  ShiftPriority,
+  ShiftType,
+} from '../../interfaces/roster.interface';
+import { Profile } from '../../interfaces/auth.interface';
 
-const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
-  handleDialogOpen,
-  dialogOpen,
-}) => {
+// TODO: move to constants folder
+// form constants
+const defaultValues: RosterFormData = {
+  startDate: new Date(),
+  endDate: new Date(),
+  type: '',
+  roster: '',
+  priority: '',
+};
+const shiftTypeOptions: ShiftType[] = [ShiftType.X, ShiftType.ANL, ShiftType.H];
+const shiftPriorityOptions: Array<ShiftType | ShiftPriority> = [
+  ShiftType.X,
+  ShiftType.ANL,
+  ShiftType.H,
+  ShiftPriority.ANL1,
+  ShiftPriority.ANL2,
+  ShiftPriority.ANL3,
+  ShiftPriority.TYC,
+];
+
+const RosterForm: FC<{
+  handleDialogOpen: () => void;
+  dialogOpen: boolean;
+  year: number;
+  month: number;
+  profile: Profile;
+}> = ({ handleDialogOpen, dialogOpen, year, month, profile }) => {
   const methods = useForm<RosterFormData>({
     defaultValues: {
-      startDate: new Date(),
-      endDate: new Date(),
+      ...defaultValues,
+      startDate: new Date(year, month),
+      endDate: new Date(year, month),
     },
   });
-  const { handleSubmit } = methods;
+  const { handleSubmit, reset } = methods;
+
+  const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
+  const disabledShiftPriorities = profile.isAdmin
+    ? []
+    : [ShiftType.X, ShiftType.ANL];
+
+  const handleCloseForm = () => {
+    reset({
+      ...defaultValues,
+      startDate: new Date(year, month),
+      endDate: new Date(year, month),
+    });
+    handleDialogOpen();
+  };
 
   const handleSubmitRosterForm = (data: RosterFormData) => {
     const uid = 'jG4T6XMZu4X3Cs2sfgprpIvOfzz2';
     const id = uuidv4();
 
-    const shift = {
-      startDate: data.startDate,
-      endDate: data.endDate,
-      uid,
-      roster: 'mechanic',
-      type: 'x',
-    };
-
     // TODO: handle error
-    set(ref(database, 'days-off/' + id), {
-      ...shift,
-
-      // transform the date into a string before saving
-      startDate: format(shift.startDate, 'yyyy-MM-dd'),
-      endDate: format(shift.endDate, 'yyyy-MM-dd'),
+    set(ref(realtimeDatabase, 'days-off/' + id), {
+      ...data,
+      uid,
+      startDate: format(data.startDate, 'yyyy-MM-dd'),
+      endDate: format(data.endDate, 'yyyy-MM-dd'),
     });
 
     handleDialogOpen();
   };
+
+  useEffect(() => {
+    reset({
+      ...defaultValues,
+      startDate: new Date(year, month),
+      endDate: new Date(year, month),
+    });
+  }, [year, month, reset]);
 
   return (
     <Dialog
@@ -73,17 +115,38 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
       }}
       open={dialogOpen}
     >
-      {' '}
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(data => handleSubmitRosterForm(data))}>
+        <form
+          onSubmit={handleSubmit(data => {
+            console.log(data);
+            handleDialogOpen();
+          })}
+        >
           <DialogTitle sx={{ p: 2 }}>Roster Form</DialogTitle>
 
           <Divider />
 
-          <DialogContent sx={{ width: '100%', mx: 'auto', mb: 2, p: 2 }}>
+          <DialogContent
+            className="roster-form_content"
+            sx={{ width: '100%', mx: 'auto', p: 2 }}
+          >
             <InputDatepicker label="Start Date" name="startDate" />
 
             <InputDatepicker label="End Date" name="endDate" />
+
+            <InputSelect
+              label="Type"
+              name="type"
+              disabledOptions={disabledShiftTypes}
+              options={shiftTypeOptions}
+            />
+
+            <InputSelect
+              label="Priority"
+              name="priority"
+              disabledOptions={disabledShiftPriorities}
+              options={shiftPriorityOptions}
+            />
           </DialogContent>
 
           <Divider />
@@ -96,7 +159,7 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
               justifyContent: 'space-between',
             }}
           >
-            <Button variant="outlined" size="large" onClick={handleDialogOpen}>
+            <Button variant="outlined" size="large" onClick={handleCloseForm}>
               Cancel
             </Button>
             <Button

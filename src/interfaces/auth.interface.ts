@@ -1,4 +1,5 @@
 import { User } from '@firebase/auth';
+import { RosterType } from './roster.interface';
 
 export enum AuthActionTypes {
   Login,
@@ -19,4 +20,14 @@ export interface AuthState {
 export interface Credentials {
   email: string;
   password: string;
+}
+
+export interface Profile {
+  entitled: number;
+  firstName: string;
+  isAdmin: boolean;
+  lastName: string;
+  roster: RosterType;
+  tyc: number;
+  uid: string;
 }

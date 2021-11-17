@@ -15,3 +15,23 @@ body {
 .shadow {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
 }
+
+.MuiPopover-paper {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: #ffffff; /* color of the tracking area */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d1d5db; /* color of the scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 4px solid #ffffff; /* creates padding around scroll thumb */
+}

@@ -5,7 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 // interfaces
 import { AuthAction, AuthState } from '../interfaces/auth.interface';
 
-export const useAuthContext = (): {
+const useAuthContext = (): {
   state: AuthState;
   dispatch: Dispatch<AuthAction>;
 } => {
@@ -17,3 +17,5 @@ export const useAuthContext = (): {
 
   return context;
 };
+
+export default useAuthContext;

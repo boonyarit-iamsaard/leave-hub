@@ -14,7 +14,7 @@ import RosterPage from './pages/RosterPage';
 import { Layout } from './components/Layout';
 
 // context
-import { useAuthContext } from './hooks/useAuthContext';
+import useAuthContext from './hooks/useAuthContext';
 
 interface ProtectedRouteProps {
   children: ReactNode;

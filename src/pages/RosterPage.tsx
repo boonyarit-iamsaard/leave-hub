@@ -7,7 +7,11 @@ import { Box } from '@mui/system';
 // components
 import { RosterBody, RosterForm, RosterHeader } from '../components/Roster';
 
+// hooks
+import useProfile from '../hooks/useProfile';
+
 const RosterPage: FC = () => {
+  const { profile } = useProfile();
   const [year, setYear] = useState(2022);
   const [month, setMonth] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -72,7 +76,13 @@ const RosterPage: FC = () => {
         </Button>
       </Box>
 
-      <RosterForm handleDialogOpen={handleDialogOpen} dialogOpen={dialogOpen} />
+      <RosterForm
+        dialogOpen={dialogOpen}
+        handleDialogOpen={handleDialogOpen}
+        month={month}
+        profile={profile}
+        year={year}
+      />
 
       {/* Roster */}
       <Card className="shadow" sx={{ display: 'flex', flexShrink: 0, p: 2 }}>

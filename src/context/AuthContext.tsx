@@ -37,9 +37,15 @@ export const authReducer = (
 ): AuthState => {
   switch (action.type) {
     case AuthActionTypes.SetIsAuthenticationReady:
-      return { user: action.payload, isAuthenticationReady: true };
+      return {
+        user: action.payload,
+        isAuthenticationReady: true,
+      };
     case AuthActionTypes.Login:
-      return { ...state, user: action.payload };
+      return {
+        ...state,
+        user: action.payload,
+      };
     case AuthActionTypes.Logout:
       return { ...state, user: null };
     default:

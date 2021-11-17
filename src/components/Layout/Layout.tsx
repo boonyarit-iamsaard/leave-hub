@@ -9,7 +9,7 @@ import LayoutNavbar from './LayoutNavbar';
 import LayoutSidebar from './LayoutSidebar';
 
 // context
-import { useAuthContext } from '../../hooks/useAuthContext';
+import useAuthContext from '../../hooks/useAuthContext';
 
 // interfaces
 export interface LayoutProps {

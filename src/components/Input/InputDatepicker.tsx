@@ -18,7 +18,7 @@ const InputDatepicker: FC<{ label: string; name: string }> = ({
     <Fragment>
       <Box sx={{ mb: 1 }}>
         <label htmlFor={name}>
-          <Typography variant="body1">{label}</Typography>
+          <Typography variant="caption">{label}</Typography>
         </label>
       </Box>
 
@@ -28,10 +28,12 @@ const InputDatepicker: FC<{ label: string; name: string }> = ({
           control={control}
           render={({ field }) => (
             <DatePicker
+              inputFormat="dd MMMM yyyy"
+              desktopModeMediaQuery="@media (min-width: 960px)"
               value={field.value}
               onChange={(date: Date | null) => field.onChange(date)}
               renderInput={params => (
-                <TextField fullWidth {...params} variant="outlined" />
+                <TextField fullWidth variant="outlined" {...params} />
               )}
             />
           )}
