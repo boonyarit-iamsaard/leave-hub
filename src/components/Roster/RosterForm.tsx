@@ -3,7 +3,14 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Backdrop, Button, Card } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+} from '@mui/material';
 
 import { database } from '../../firebase/config';
 import { ref, set } from '@firebase/database';
@@ -27,8 +34,6 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
   });
   const { handleSubmit } = methods;
 
-  // TODO: add to handleSubmit later
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmitRosterForm = (data: IRosterForm) => {
     const uid = 'jG4T6XMZu4X3Cs2sfgprpIvOfzz2';
     const id = uuidv4();
@@ -41,6 +46,7 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
       type: 'x',
     };
 
+    // TODO: handle error
     set(ref(database, 'days-off/' + id), {
       ...shift,
 
@@ -53,33 +59,58 @@ const RosterForm: FC<{ handleDialogOpen: () => void; dialogOpen: boolean }> = ({
   };
 
   return (
-    <Backdrop
+    <Dialog
+      className="roster-form"
       sx={{
         color: '#fff',
         zIndex: theme => theme.zIndex.drawer + 1,
         backdropFilter: 'blur(3px)',
+        '& .MuiDialog-paper': {
+          m: 2,
+          width: '100%',
+          maxWidth: '400px',
+        },
       }}
-      onClick={handleDialogOpen}
       open={dialogOpen}
     >
-      <Card
-        className="shadow"
-        style={{ width: '100%', maxWidth: 400 }}
-        sx={{ mx: 'auto', mb: 2, p: 2 }}
-      >
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(data => handleSubmitRosterForm(data))}>
+      {' '}
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(data => handleSubmitRosterForm(data))}>
+          <DialogTitle sx={{ p: 2 }}>Roster Form</DialogTitle>
+
+          <Divider />
+
+          <DialogContent sx={{ width: '100%', mx: 'auto', mb: 2, p: 2 }}>
             <InputDatepicker label="Start Date" name="startDate" />
 
             <InputDatepicker label="End Date" name="endDate" />
+          </DialogContent>
 
-            <Button fullWidth variant="contained" size="large" type="submit">
+          <Divider />
+
+          <DialogActions
+            sx={{
+              display: 'flex',
+              p: 2,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Button variant="outlined" size="large" onClick={handleDialogOpen}>
+              Cancel
+            </Button>
+            <Button
+              className="shadow"
+              variant="contained"
+              size="large"
+              type="submit"
+            >
               Save
             </Button>
-          </form>
-        </FormProvider>
-      </Card>
-    </Backdrop>
+          </DialogActions>
+        </form>
+      </FormProvider>
+    </Dialog>
   );
 };
 

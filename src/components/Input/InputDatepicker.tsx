@@ -2,7 +2,7 @@ import { FC, Fragment } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { Box } from '@mui/system';
-import { MobileDatePicker } from '@mui/lab';
+import { DatePicker } from '@mui/lab';
 import { TextField, Typography } from '@mui/material';
 
 const InputDatepicker: FC<{ label: string; name: string }> = ({
@@ -27,9 +27,7 @@ const InputDatepicker: FC<{ label: string; name: string }> = ({
           name={name}
           control={control}
           render={({ field }) => (
-            <MobileDatePicker
-              disableCloseOnSelect
-              readOnly
+            <DatePicker
               value={field.value}
               onChange={(date: Date | null) => field.onChange(date)}
               renderInput={params => (
