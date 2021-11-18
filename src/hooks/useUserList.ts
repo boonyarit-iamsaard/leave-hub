@@ -7,28 +7,32 @@ import { collection, onSnapshot } from 'firebase/firestore';
 // interfaces
 import { Profile } from '../interfaces/auth.interface';
 
-const useUsers = () => {
-  const [users, setUsers] = useState<Profile[]>([] as Profile[]);
+const useUserList = (): {
+  userList: Profile[];
+  loading: boolean;
+  error: string | null;
+} => {
+  const [userList, setUserList] = useState<Profile[]>([] as Profile[]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const ref = collection(firestoreDatabase, 'users');
     const unsubscribe = onSnapshot(ref, snapshot => {
-      const users: Profile[] = [];
+      const userList: Profile[] = [];
 
       snapshot.forEach(doc => {
         const user = doc.data() as Profile;
-        users.push(user);
+        userList.push(user);
       });
 
-      setUsers(users);
+      setUserList(userList);
     });
 
     return () => unsubscribe();
   }, []);
 
-  return { users, loading, error };
+  return { userList, loading, error };
 };
 
-export default useUsers;
+export default useUserList;

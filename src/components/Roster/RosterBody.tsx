@@ -1,19 +1,20 @@
 import { FC } from 'react';
 import { isSameDay } from 'date-fns';
 
-import { Box } from '@mui/system';
-
 import useRosterHeader from '../../hooks/useRosterHeader';
 import useRoster from '../../hooks/useRoster';
 
-const staffs = [
-  {
-    uid: 'jG4T6XMZu4X3Cs2sfgprpIvOfzz2',
-    firstName: 'Boonyarit',
-  },
-];
+// styled components
+import { RosterBodyCell, RosterBodyRow } from './RosterBody.style';
 
-const RosterBody: FC<{ year: number; month: number }> = ({ year, month }) => {
+// interfaces
+import { Profile } from '../../interfaces/auth.interface';
+
+const RosterBody: FC<{ year: number; month: number; userList: Profile[] }> = ({
+  year,
+  month,
+  userList,
+}) => {
   const { daysAndDatesHeader } = useRosterHeader(year, month);
   const { roster } = useRoster(year, month);
 
@@ -26,17 +27,17 @@ const RosterBody: FC<{ year: number; month: number }> = ({ year, month }) => {
   };
 
   return (
-    <Box>
-      {staffs.map(staff => (
-        <Box sx={{ display: 'flex' }} key={staff.uid}>
+    <div>
+      {userList.map(user => (
+        <RosterBodyRow key={user.uid}>
           {daysAndDatesHeader().dates.map((date, index) => (
-            <Box sx={{ minWidth: 40, textAlign: 'center' }} key={index}>
-              {matchRoster(staff.uid, date)}
-            </Box>
+            <RosterBodyCell key={index}>
+              {matchRoster(user.uid, date)}
+            </RosterBodyCell>
           ))}
-        </Box>
+        </RosterBodyRow>
       ))}
-    </Box>
+    </div>
   );
 };
 

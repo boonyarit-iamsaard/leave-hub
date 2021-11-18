@@ -5,6 +5,7 @@ import { Box } from '@mui/system';
 
 import usePublicHolidays from '../../hooks/usePublicHolidays';
 import useRosterHeader from '../../hooks/useRosterHeader';
+import { RosterBodyCell } from './RosterBody.style';
 
 const RosterHeader: FC<{ year: number; month: number }> = ({
   year = 2022,
@@ -22,27 +23,23 @@ const RosterHeader: FC<{ year: number; month: number }> = ({
       {/* Days */}
       <Box sx={{ display: 'flex' }}>
         {daysAndDatesHeader().days.map((day, index) => (
-          <Box key={index} sx={{ minWidth: 40, textAlign: 'center' }}>
-            {day}
-          </Box>
+          <RosterBodyCell key={index}>{day}</RosterBodyCell>
         ))}
       </Box>
 
       {/* Dates */}
       <Box sx={{ display: 'flex' }}>
         {daysAndDatesHeader().dates.map((date, index) => (
-          <Box key={index} sx={{ minWidth: 40, textAlign: 'center' }}>
-            {format(date, 'dd')}
-          </Box>
+          <RosterBodyCell key={index}>{format(date, 'dd')}</RosterBodyCell>
         ))}
       </Box>
 
       {/* Public Holidays */}
       <Box sx={{ display: 'flex' }}>
         {daysAndDatesHeader().dates.map((date, index) => (
-          <Box key={index} sx={{ minWidth: 40, textAlign: 'center' }}>
+          <RosterBodyCell key={index}>
             {getPublicHoliday(date) ? 'PH' : ''}
-          </Box>
+          </RosterBodyCell>
         ))}
       </Box>
     </Box>

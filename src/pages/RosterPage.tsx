@@ -1,17 +1,27 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { format } from 'date-fns';
 
 import { Button, Card, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Box, styled } from '@mui/system';
 
 // components
 import { RosterBody, RosterForm, RosterHeader } from '../components/Roster';
 
 // hooks
 import useProfile from '../hooks/useProfile';
+import useUserList from '../hooks/useUserList';
+
+const RosterPageTitleColumn = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  minWidth: 120,
+  height: theme.spacing(5),
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+}));
 
 const RosterPage: FC = () => {
   const { profile } = useProfile();
+  const { userList } = useUserList();
   const [year, setYear] = useState(2022);
   const [month, setMonth] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -37,6 +47,14 @@ const RosterPage: FC = () => {
       setMonth(month + 1);
     }
   };
+
+  useEffect(() => {
+    const rosterBody = document.getElementById('roster-body');
+    rosterBody?.scrollTo({
+      left: -10000,
+      behavior: 'smooth',
+    });
+  }, [year, month]);
 
   return (
     <Box sx={{ width: '100%', maxWidth: 'lg', mx: 'auto' }}>
@@ -87,21 +105,17 @@ const RosterPage: FC = () => {
       {/* Roster */}
       <Card className="shadow" sx={{ display: 'flex', flexShrink: 0, p: 2 }}>
         <Box sx={{ minWidth: 120 }}>
-          <Box>DAY</Box>
-          <Box>DATE</Box>
-          <Box>PH</Box>
-          <Box>Boonyarit</Box>
+          <RosterPageTitleColumn>DAY</RosterPageTitleColumn>
+          <RosterPageTitleColumn>DATE</RosterPageTitleColumn>
+          <RosterPageTitleColumn>PH</RosterPageTitleColumn>
+          <RosterPageTitleColumn>Boonyarit</RosterPageTitleColumn>
         </Box>
-        <Box sx={{ overflow: 'auto' }}>
+        <Box id="roster-body" sx={{ overflow: 'auto' }}>
           <RosterHeader year={year} month={month} />
 
-          <RosterBody year={year} month={month} />
+          <RosterBody year={year} month={month} userList={userList} />
         </Box>
       </Card>
-
-      {/* <Card className="shadow" sx={{ mb: 2, p: 2 }}>
-        <pre>{JSON.stringify(roster, null, 2)}</pre>
-      </Card> */}
     </Box>
   );
 };

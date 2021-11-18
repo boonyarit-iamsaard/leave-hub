@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { Profile } from '../interfaces/auth.interface';
 
 // hooks
-import useUsers from './useUsers';
+import useUserList from './useUserList';
 import useAuthContext from './useAuthContext';
 
 const useProfile = (): { profile: Profile } => {
-  const { users } = useUsers();
+  const { userList } = useUserList();
   const {
     state: { user },
   } = useAuthContext();
@@ -17,11 +17,11 @@ const useProfile = (): { profile: Profile } => {
   useEffect(() => {
     if (user && user.uid) {
       const { uid } = user;
-      const profile = users.find(user => user.uid === uid);
+      const profile = userList.find(user => user.uid === uid);
 
       if (profile) setProfile(profile);
     }
-  }, [users, user]);
+  }, [userList, user]);
 
   return { profile };
 };
