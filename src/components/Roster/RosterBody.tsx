@@ -5,7 +5,7 @@ import useRosterHeader from '../../hooks/useRosterHeader';
 import useRoster from '../../hooks/useRoster';
 
 // styled components
-import { RosterBodyCell, RosterBodyRow } from './RosterBody.style';
+import { RosterRow, RosterCell } from './Roster.style';
 
 // interfaces
 import { Profile } from '../../interfaces/auth.interface';
@@ -29,13 +29,11 @@ const RosterBody: FC<{ year: number; month: number; userList: Profile[] }> = ({
   return (
     <div>
       {userList.map(user => (
-        <RosterBodyRow key={user.uid}>
+        <RosterRow key={user.uid}>
           {daysAndDatesHeader().dates.map((date, index) => (
-            <RosterBodyCell key={index}>
-              {matchRoster(user.uid, date)}
-            </RosterBodyCell>
+            <RosterCell key={index}>{matchRoster(user.uid, date)}</RosterCell>
           ))}
-        </RosterBodyRow>
+        </RosterRow>
       ))}
     </div>
   );

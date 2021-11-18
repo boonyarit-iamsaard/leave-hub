@@ -1,11 +1,15 @@
 import { FC } from 'react';
 import { format, isSameDay } from 'date-fns';
 
+// mui
 import { Box } from '@mui/system';
 
+// hooks
 import usePublicHolidays from '../../hooks/usePublicHolidays';
 import useRosterHeader from '../../hooks/useRosterHeader';
-import { RosterBodyCell } from './RosterBody.style';
+
+// styled components
+import { RosterCell, RosterRow } from './Roster.style';
 
 const RosterHeader: FC<{ year: number; month: number }> = ({
   year = 2022,
@@ -21,27 +25,27 @@ const RosterHeader: FC<{ year: number; month: number }> = ({
   return (
     <Box>
       {/* Days */}
-      <Box sx={{ display: 'flex' }}>
+      <RosterRow>
         {daysAndDatesHeader().days.map((day, index) => (
-          <RosterBodyCell key={index}>{day}</RosterBodyCell>
+          <RosterCell key={index}>{day}</RosterCell>
         ))}
-      </Box>
+      </RosterRow>
 
       {/* Dates */}
-      <Box sx={{ display: 'flex' }}>
+      <RosterRow>
         {daysAndDatesHeader().dates.map((date, index) => (
-          <RosterBodyCell key={index}>{format(date, 'dd')}</RosterBodyCell>
+          <RosterCell key={index}>{format(date, 'dd')}</RosterCell>
         ))}
-      </Box>
+      </RosterRow>
 
       {/* Public Holidays */}
-      <Box sx={{ display: 'flex' }}>
+      <RosterRow>
         {daysAndDatesHeader().dates.map((date, index) => (
-          <RosterBodyCell key={index}>
+          <RosterCell key={index}>
             {getPublicHoliday(date) ? 'PH' : ''}
-          </RosterBodyCell>
+          </RosterCell>
         ))}
-      </Box>
+      </RosterRow>
     </Box>
   );
 };

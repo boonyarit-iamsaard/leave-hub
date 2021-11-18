@@ -66,7 +66,7 @@ const Layout: FC<ReactNode> = ({ children }) => {
           py: 2,
           width: {
             xs: '100%',
-            lg: `calc(100% - ${drawerWidth}px)`,
+            xl: `calc(100% - ${drawerWidth}px)`,
           },
         }}
       >

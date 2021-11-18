@@ -1,10 +1,10 @@
 import { styled } from '@mui/system';
 
-export const RosterBodyRow = styled('div')({
+export const RosterRow = styled('div')({
   display: 'flex',
 });
 
-export const RosterBodyCell = styled('div')(({ theme }) => ({
+export const RosterCell = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

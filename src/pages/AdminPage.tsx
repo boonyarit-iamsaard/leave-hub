@@ -7,7 +7,11 @@ import { styled } from '@mui/system';
 // components
 import { AdminUserForm, AdminUserList } from '../components/Admin';
 
+// hooks
 import useUserList from '../hooks/useUserList';
+
+// interfaces
+import { Profile } from '../interfaces/auth.interface';
 
 const AdminPageHeader = styled('div')({
   display: 'flex',
@@ -17,10 +21,18 @@ const AdminPageHeader = styled('div')({
 
 const AdminPage: FC = () => {
   const { userList } = useUserList();
+  const [user, setUser] = useState<Profile>({} as Profile);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const handleDialogOpen = () => {
     setDialogOpen(!dialogOpen);
+  };
+
+  const handleEditDialogOpen = (user: Profile) => {
+    setEditMode(true);
+    setUser(user);
+    handleDialogOpen();
   };
 
   return (
@@ -38,11 +50,15 @@ const AdminPage: FC = () => {
         </Button>
       </AdminPageHeader>
 
-      <AdminUserList userList={userList} />
+      <AdminUserList
+        handleEditDialogOpen={handleEditDialogOpen}
+        userList={userList}
+      />
 
       <AdminUserForm
         dialogOpen={dialogOpen}
         handleDialogOpen={handleDialogOpen}
+        user={editMode ? user : undefined}
       />
     </div>
   );

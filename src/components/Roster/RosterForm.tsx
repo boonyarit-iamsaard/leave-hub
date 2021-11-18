@@ -36,15 +36,19 @@ const defaultValues: RosterFormData = {
   roster: '',
   priority: '',
 };
-const shiftTypeOptions: ShiftType[] = [ShiftType.X, ShiftType.ANL, ShiftType.H];
-const shiftPriorityOptions: Array<ShiftType | ShiftPriority> = [
-  ShiftType.X,
-  ShiftType.ANL,
-  ShiftType.H,
-  ShiftPriority.ANL1,
-  ShiftPriority.ANL2,
-  ShiftPriority.ANL3,
-  ShiftPriority.TYC,
+const shiftTypeOptions = [
+  { value: ShiftType.X, label: 'X' },
+  { value: ShiftType.ANL, label: 'ANL' },
+  { value: ShiftType.H, label: 'H' },
+];
+const shiftPriorityOptions = [
+  { value: ShiftType.X, label: 'X' },
+  { value: ShiftType.ANL, label: 'ANL' },
+  { value: ShiftType.H, label: 'H' },
+  { value: ShiftPriority.ANL1, label: 'ANL1' },
+  { value: ShiftPriority.ANL2, label: 'ANL2' },
+  { value: ShiftPriority.ANL3, label: 'ANL3' },
+  { value: ShiftPriority.TYC, label: 'TYC' },
 ];
 
 const RosterForm: FC<{

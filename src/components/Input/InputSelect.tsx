@@ -9,7 +9,7 @@ interface InputSelectProps {
   disabledOptions?: string[];
   label: string;
   name: string;
-  options: string[];
+  options: { value: string; label: string }[];
 }
 
 const InputSelect: FC<InputSelectProps> = ({
@@ -32,13 +32,13 @@ const InputSelect: FC<InputSelectProps> = ({
         name={name}
         render={({ field }) => (
           <Select {...field}>
-            {options.map(option => (
+            {options.map(({ value, label }) => (
               <MenuItem
-                disabled={disabledOptions && disabledOptions.includes(option)}
-                key={option}
-                value={option}
+                disabled={disabledOptions && disabledOptions.includes(value)}
+                key={value}
+                value={value}
               >
-                {option}
+                {label}
               </MenuItem>
             ))}
           </Select>

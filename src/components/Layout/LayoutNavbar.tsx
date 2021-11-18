@@ -40,8 +40,8 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
       sx={{
         background: 'white',
         color: 'text.primary',
-        width: { lg: `calc(100% - ${drawerWidth}px)` },
-        ml: { lg: `${drawerWidth}px` },
+        width: { xl: `calc(100% - ${drawerWidth}px)` },
+        ml: { xl: `${drawerWidth}px` },
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
@@ -51,7 +51,7 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { lg: 'none' } }}
+            sx={{ mr: 2, display: { xl: 'none' } }}
           >
             <MenuIcon />
           </IconButton>

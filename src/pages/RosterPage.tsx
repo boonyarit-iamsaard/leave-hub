@@ -11,20 +11,29 @@ import { RosterBody, RosterForm, RosterHeader } from '../components/Roster';
 import useProfile from '../hooks/useProfile';
 import useUserList from '../hooks/useUserList';
 
+// interfaces
+import { RosterType } from '../interfaces/roster.interface';
+
 const RosterPageTitleColumn = styled('div')(({ theme }) => ({
+  fontSize: 14,
   display: 'flex',
   alignItems: 'center',
-  minWidth: 120,
+  minWidth: 100,
   height: theme.spacing(5),
   borderBottom: `1px solid ${theme.palette.grey[200]}`,
 }));
 
 const RosterPage: FC = () => {
   const { profile } = useProfile();
-  const { userList } = useUserList();
+  const { userList } = useUserList(RosterType.Mechanic);
   const [year, setYear] = useState(2022);
   const [month, setMonth] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const userListOptions = userList.map(user => ({
+    value: user.uid,
+    label: user.firstName,
+  }));
 
   const handleDialogOpen = () => {
     setDialogOpen(!dialogOpen);
@@ -66,21 +75,6 @@ const RosterPage: FC = () => {
           mb: 2,
         }}
       >
-        <Typography>Roster - Page</Typography>
-
-        <Button onClick={handleDialogOpen} variant="contained">
-          New
-        </Button>
-      </Box>
-
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 2,
-        }}
-      >
         <Button variant="outlined" onClick={handlePreviousClick}>
           Previous
         </Button>
@@ -89,9 +83,15 @@ const RosterPage: FC = () => {
           {format(new Date(year, month), 'MMMM yyyy')}
         </Typography>
 
-        <Button variant="outlined" onClick={handleNextClick}>
-          Next
-        </Button>
+        <div>
+          <Button sx={{ mr: 2 }} onClick={handleDialogOpen} variant="contained">
+            New
+          </Button>
+
+          <Button variant="outlined" onClick={handleNextClick}>
+            Next
+          </Button>
+        </div>
       </Box>
 
       <RosterForm
@@ -103,12 +103,24 @@ const RosterPage: FC = () => {
       />
 
       {/* Roster */}
-      <Card className="shadow" sx={{ display: 'flex', flexShrink: 0, p: 2 }}>
-        <Box sx={{ minWidth: 120 }}>
+      <Card
+        className="shadow"
+        sx={{
+          display: 'flex',
+          flexShrink: 0,
+          p: 2,
+        }}
+      >
+        <Box sx={{ minWidth: 120, overflow: 'auto' }}>
           <RosterPageTitleColumn>DAY</RosterPageTitleColumn>
           <RosterPageTitleColumn>DATE</RosterPageTitleColumn>
           <RosterPageTitleColumn>PH</RosterPageTitleColumn>
-          <RosterPageTitleColumn>Boonyarit</RosterPageTitleColumn>
+          {userList &&
+            userList.map(user => (
+              <RosterPageTitleColumn key={user.firstName}>
+                {user.firstName}
+              </RosterPageTitleColumn>
+            ))}
         </Box>
         <Box id="roster-body" sx={{ overflow: 'auto' }}>
           <RosterHeader year={year} month={month} />

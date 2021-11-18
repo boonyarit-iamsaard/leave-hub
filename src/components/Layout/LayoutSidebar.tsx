@@ -19,7 +19,7 @@ const LayoutSidebar: FC<LayoutProps> = ({
     <Box
       className="layout-sidebar"
       component="nav"
-      sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
+      sx={{ width: { xl: drawerWidth }, flexShrink: { xl: 0 } }}
       aria-label="mailbox folders"
     >
       {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -31,7 +31,7 @@ const LayoutSidebar: FC<LayoutProps> = ({
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          display: { xs: 'block', lg: 'none' },
+          display: { xs: 'block', xl: 'none' },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: drawerWidth,
@@ -44,7 +44,7 @@ const LayoutSidebar: FC<LayoutProps> = ({
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', lg: 'block' },
+          display: { xs: 'none', xl: 'block' },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: drawerWidth,
