@@ -3,16 +3,10 @@ export interface Roster {
   shiftId: string;
   uid: string;
   date: Date;
-  type: string;
-  roster: string;
-}
-
-export interface RosterFormData {
-  startDate: Date;
-  endDate: Date;
-  type: string;
-  roster: string;
-  priority: string;
+  type: ShiftType;
+  roster: RosterType;
+  status: ShiftStatus;
+  priority: ShiftPriority | ShiftType;
 }
 
 export interface Shift {
@@ -22,8 +16,10 @@ export interface Shift {
   endDate: Date;
   type: ShiftType;
   roster: RosterType;
-  priority?: ShiftPriority | ShiftType;
-  status?: ShiftStatus;
+  priority: ShiftPriority | ShiftType;
+  status: ShiftStatus;
+  createdAt?: number;
+  updatedAt?: number;
 }
 
 export enum RosterType {

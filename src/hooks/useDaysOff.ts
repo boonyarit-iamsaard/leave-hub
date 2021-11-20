@@ -50,29 +50,30 @@ const useDaysOff = (): { daysOff: Shift[] } => {
         endDate: new Date(dayOff.val().endDate),
       };
 
-      setDaysOff([...daysOff, dayOffData]);
+      // setDaysOff([...daysOff, dayOffData]);
+      setDaysOff(prevState => prevState.concat(dayOffData));
     });
 
     const onDayOffChangedListener = onChildChanged(daysOffRef, dayOff => {
       const dayOffIndex = daysOff.findIndex(({ id }) => id === dayOff.key);
 
-      if (dayOffIndex !== -1) {
-        daysOff[dayOffIndex] = {
-          ...dayOff.val(),
-          id: dayOff.key,
-          // transform the date from firebase to a date object
-          startDate: new Date(dayOff.val().startDate),
-          endDate: new Date(dayOff.val().endDate),
-        };
-      }
+      const dayOffData: Shift = {
+        ...dayOff.val(),
+        id: dayOff.key,
+        // transform the date from firebase to a date object
+        startDate: new Date(dayOff.val().startDate),
+        endDate: new Date(dayOff.val().endDate),
+      };
 
-      setDaysOff([...daysOff]);
+      setDaysOff(prevState => {
+        const newState = [...prevState];
+        newState[dayOffIndex] = dayOffData;
+        return newState;
+      });
     });
 
     const onDayOffRemovedListener = onChildRemoved(daysOffRef, dayOff => {
-      const updatedDaysOff = daysOff.filter(({ id }) => id !== dayOff.key);
-
-      setDaysOff([...updatedDaysOff]);
+      setDaysOff(prevState => prevState.filter(({ id }) => id !== dayOff.key));
     });
 
     return () => {

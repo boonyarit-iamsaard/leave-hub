@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 // mui
 import { Card } from '@mui/material';
@@ -7,35 +7,37 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridRowsProp,
-  GridSortModel,
 } from '@mui/x-data-grid';
 
 // interfaces
 import { Profile } from '../../interfaces/auth.interface';
+import { RosterType } from '../../interfaces/roster.interface';
+
+// components
 import AdminUserListOptions from './AdminUserListOptions';
 
+// hooks
+import useAdminSummary from '../../hooks/useAdminSummary';
+import AdminUserListUsed from './AdminUserListUsed';
+
 interface AdminUserListProps {
-  userList: Profile[];
   handleEditDialogOpen: (user: Profile) => void;
+  rosterType: RosterType;
 }
 
 const AdminUserList: FC<AdminUserListProps> = ({
-  userList,
   handleEditDialogOpen,
+  rosterType = RosterType.Mechanic,
 }) => {
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    {
-      field: 'firstName',
-      sort: 'asc',
-    },
-  ]);
+  const { adminSummary } = useAdminSummary(rosterType);
 
-  const rows: GridRowsProp = userList.map(user => ({
-    id: user.uid,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    entitled: user.entitled,
-    options: user,
+  const rows: GridRowsProp = adminSummary.map(summary => ({
+    id: summary.user.uid,
+    firstName: summary.user.firstName,
+    lastName: summary.user.lastName,
+    entitled: summary.user.entitled,
+    used: summary.total,
+    options: summary.user,
   }));
 
   const columns: GridColDef[] = [
@@ -55,6 +57,22 @@ const AdminUserList: FC<AdminUserListProps> = ({
       flex: 1,
     },
     {
+      field: 'used',
+      headerName: 'Used',
+      flex: 1,
+      renderCell: params => {
+        const entitled = params.getValue(params.id, 'entitled');
+        const used = params.value;
+        const percentage = Math.round(
+          entitled && (entitled as number)
+            ? (used / (entitled as number)) * 100
+            : 0
+        ).toFixed(2);
+
+        return <AdminUserListUsed used={used} percentage={percentage} />;
+      },
+    },
+    {
       field: 'options',
       headerName: 'Options',
       width: 150,
@@ -72,15 +90,13 @@ const AdminUserList: FC<AdminUserListProps> = ({
   return (
     <div style={{ display: 'flex', height: '100%' }}>
       <div style={{ flexGrow: 1 }}>
-        <Card className="shadow">
+        <Card className="shadow" sx={{ mb: 2 }}>
           <DataGrid
             autoHeight
             columns={columns}
-            onSortModelChange={model => setSortModel(model)}
             pageSize={10}
             rows={rows}
             rowsPerPageOptions={[10, 25, 50, 100]}
-            sortModel={sortModel}
           />
         </Card>
       </div>

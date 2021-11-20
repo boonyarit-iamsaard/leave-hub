@@ -10,6 +10,7 @@ interface InputSelectProps {
   label: string;
   name: string;
   options: { value: string; label: string }[];
+  shouldDisabled?: boolean;
 }
 
 const InputSelect: FC<InputSelectProps> = ({
@@ -17,11 +18,12 @@ const InputSelect: FC<InputSelectProps> = ({
   label,
   name,
   options,
+  shouldDisabled = false,
 }) => {
   const { control } = useFormContext();
 
   return (
-    <FormControl fullWidth sx={{ mb: 2 }}>
+    <FormControl fullWidth sx={{ mb: 2 }} disabled={shouldDisabled}>
       <Box mb={1}>
         <label htmlFor={name}>
           <Typography variant="caption">{label}</Typography>
@@ -32,10 +34,10 @@ const InputSelect: FC<InputSelectProps> = ({
         name={name}
         render={({ field }) => (
           <Select {...field}>
-            {options.map(({ value, label }) => (
+            {options.map(({ value, label }, index) => (
               <MenuItem
                 disabled={disabledOptions && disabledOptions.includes(value)}
-                key={value}
+                key={index}
                 value={value}
               >
                 {label}

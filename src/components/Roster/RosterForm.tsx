@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,21 +21,37 @@ import { InputDatepicker, InputSelect } from '../Input';
 
 // interfaces
 import {
-  RosterFormData,
+  RosterType,
+  Shift,
   ShiftPriority,
+  ShiftStatus,
   ShiftType,
 } from '../../interfaces/roster.interface';
 import { Profile } from '../../interfaces/auth.interface';
 
+// hooks
+import useShiftList from '../../hooks/useShiftList';
+import useUserList from '../../hooks/useUserList';
+
 // TODO: move to constants folder
 // form constants
-const defaultValues: RosterFormData = {
-  startDate: new Date(),
-  endDate: new Date(),
-  type: '',
-  roster: '',
-  priority: '',
-};
+const defaultFormValues = (
+  profile: Profile,
+  year: number,
+  month: number
+): Shift => ({
+  id: uuidv4(),
+  uid: profile.uid,
+  startDate: new Date(year, month),
+  endDate: new Date(year, month),
+  type: ShiftType.ANL,
+  roster:
+    profile.roster === RosterType.Mechanic
+      ? RosterType.Mechanic
+      : RosterType.Engineer,
+  priority: ShiftPriority.ANL3,
+  status: ShiftStatus.Pending,
+});
 const shiftTypeOptions = [
   { value: ShiftType.X, label: 'X' },
   { value: ShiftType.ANL, label: 'ANL' },
@@ -50,59 +66,156 @@ const shiftPriorityOptions = [
   { value: ShiftPriority.ANL3, label: 'ANL3' },
   { value: ShiftPriority.TYC, label: 'TYC' },
 ];
+const shiftStatusOptions = [
+  { value: ShiftStatus.Pending, label: 'Pending' },
+  { value: ShiftStatus.Approved, label: 'Approved' },
+  { value: ShiftStatus.Rejected, label: 'Rejected' },
+];
+const userListOptions = (userList: Profile[]) => {
+  return userList.map(user => ({
+    value: user.uid,
+    label: user.firstName,
+  }));
+};
 
-const RosterForm: FC<{
-  handleDialogOpen: () => void;
+interface RostersFormProps {
   dialogOpen: boolean;
-  year: number;
+  handleConfirmDialog: (shift: Shift) => void;
+  handleDialogOpen: () => void;
   month: number;
   profile: Profile;
-}> = ({ handleDialogOpen, dialogOpen, year, month, profile }) => {
-  const methods = useForm<RosterFormData>({
+  shift?: Shift;
+  year: number;
+  rosterType: RosterType;
+}
+
+const RosterForm: FC<RostersFormProps> = ({
+  dialogOpen,
+  handleConfirmDialog,
+  handleDialogOpen,
+  month,
+  profile,
+  shift,
+  year,
+  rosterType = RosterType.Mechanic,
+}) => {
+  const [shouldDisabled, setShouldDisabled] = useState(false);
+  const { setShiftDocument } = useShiftList();
+  const { userList } = useUserList(rosterType);
+
+  const methods = useForm<Shift>({
     defaultValues: {
-      ...defaultValues,
-      startDate: new Date(year, month),
-      endDate: new Date(year, month),
+      ...defaultFormValues(profile, year, month),
     },
   });
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, watch, setValue } = methods;
+  const { startDate, type, createdAt } = watch();
 
   const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
-  const disabledShiftPriorities = profile.isAdmin
-    ? []
-    : [ShiftType.X, ShiftType.ANL];
+  const disabledShiftPriorities = () => {
+    if (profile.isAdmin) return [];
+
+    if (profile.tyc > 0 && type === ShiftType.ANL)
+      return [ShiftType.X, ShiftType.ANL, ShiftType.H];
+
+    if (profile.tyc === 0 && type === ShiftType.ANL)
+      return [ShiftType.X, ShiftType.ANL, ShiftType.H, ShiftPriority.TYC];
+
+    return [ShiftType.X, ShiftType.ANL, ShiftPriority.TYC];
+  };
 
   const handleCloseForm = () => {
+    let uid = profile.uid;
+
+    if (profile.isAdmin && profile.roster !== rosterType) uid = userList[0].uid;
+
     reset({
-      ...defaultValues,
+      id: uuidv4(),
+      uid,
       startDate: new Date(year, month),
       endDate: new Date(year, month),
+      type: ShiftType.ANL,
+      roster: rosterType,
+      priority: ShiftPriority.ANL3,
+      status: ShiftStatus.Pending,
     });
+
     handleDialogOpen();
   };
 
-  const handleSubmitRosterForm = (data: RosterFormData) => {
-    const uid = 'jG4T6XMZu4X3Cs2sfgprpIvOfzz2';
-    const id = uuidv4();
+  const handleSubmitRosterForm = async (data: Shift) => {
+    if (!data.createdAt) {
+      data.createdAt = Date.now();
+      data.updatedAt = Date.now();
+      data.status =
+        data.type !== ShiftType.X ? ShiftStatus.Pending : ShiftStatus.Approved;
+    } else data.updatedAt = Date.now();
 
-    // TODO: handle error
-    set(ref(realtimeDatabase, 'days-off/' + id), {
-      ...data,
-      uid,
-      startDate: format(data.startDate, 'yyyy-MM-dd'),
-      endDate: format(data.endDate, 'yyyy-MM-dd'),
-    });
+    if (data.type === ShiftType.X) {
+      await set(ref(realtimeDatabase, 'days-off/' + data.id), {
+        ...data,
+        startDate: format(data.startDate, 'yyyy-MM-dd'),
+        endDate: format(data.endDate, 'yyyy-MM-dd'),
+      });
+    } else {
+      await setShiftDocument(data);
+    }
 
-    handleDialogOpen();
+    handleCloseForm();
   };
 
   useEffect(() => {
-    reset({
-      ...defaultValues,
-      startDate: new Date(year, month),
-      endDate: new Date(year, month),
-    });
-  }, [year, month, reset]);
+    if (shift) {
+      reset({ ...shift });
+    } else {
+      let uid = profile.uid;
+
+      if (profile.isAdmin && profile.roster !== rosterType)
+        uid = userList[0].uid;
+
+      reset({
+        id: uuidv4(),
+        uid,
+        startDate: new Date(year, month),
+        endDate: new Date(year, month),
+        type: ShiftType.ANL,
+        roster: rosterType,
+        priority: ShiftPriority.ANL3,
+        status: ShiftStatus.Pending,
+      });
+    }
+  }, [year, month, reset, profile, shift, rosterType, userList]);
+
+  useEffect(() => {
+    if (!shift) {
+      setValue('endDate', startDate);
+    }
+  }, [startDate, setValue, shift]);
+
+  useEffect(() => {
+    if (type === ShiftType.X) {
+      setValue('priority', ShiftType.X);
+      setValue('status', ShiftStatus.Approved);
+      setShouldDisabled(true);
+    }
+    if (type === ShiftType.H) {
+      setValue('priority', ShiftType.H);
+      setShouldDisabled(true);
+    }
+    if (type === ShiftType.ANL) {
+      setValue('priority', ShiftPriority.ANL3);
+      setShouldDisabled(false);
+    }
+  }, [type, setValue]);
+
+  useEffect(() => {
+    if (
+      rosterType === RosterType.Engineer &&
+      profile.roster === RosterType.Mechanic
+    ) {
+      setValue('uid', userList[0].uid);
+    }
+  }, [rosterType, setValue, userList, profile]);
 
   return (
     <Dialog
@@ -118,14 +231,10 @@ const RosterForm: FC<{
         },
       }}
       open={dialogOpen}
+      onClose={handleCloseForm}
     >
       <FormProvider {...methods}>
-        <form
-          onSubmit={handleSubmit(data => {
-            console.log(data);
-            handleDialogOpen();
-          })}
-        >
+        <form onSubmit={handleSubmit(data => handleSubmitRosterForm(data))}>
           <DialogTitle sx={{ p: 2 }}>Roster Form</DialogTitle>
 
           <Divider />
@@ -134,27 +243,47 @@ const RosterForm: FC<{
             className="roster-form_content"
             sx={{ width: '100%', mx: 'auto', p: 2 }}
           >
+            {profile.isAdmin && (
+              <InputSelect
+                label="User"
+                name="uid"
+                options={userListOptions(userList)}
+              />
+            )}
+
             <InputDatepicker label="Start Date" name="startDate" />
 
-            <InputDatepicker label="End Date" name="endDate" />
+            <InputDatepicker
+              label="End Date"
+              minDate={startDate}
+              name="endDate"
+            />
 
             <InputSelect
+              disabledOptions={disabledShiftTypes}
               label="Type"
               name="type"
-              disabledOptions={disabledShiftTypes}
               options={shiftTypeOptions}
             />
 
             <InputSelect
+              disabledOptions={disabledShiftPriorities()}
               label="Priority"
               name="priority"
-              disabledOptions={disabledShiftPriorities}
               options={shiftPriorityOptions}
+              shouldDisabled={shouldDisabled}
             />
+
+            {shift && (
+              <InputSelect
+                shouldDisabled={!profile.isAdmin}
+                label="Status"
+                name="status"
+                options={shiftStatusOptions}
+              />
+            )}
           </DialogContent>
-
           <Divider />
-
           <DialogActions
             sx={{
               display: 'flex',
@@ -163,14 +292,24 @@ const RosterForm: FC<{
               justifyContent: 'space-between',
             }}
           >
-            <Button variant="outlined" size="large" onClick={handleCloseForm}>
-              Cancel
-            </Button>
+            {profile.isAdmin && createdAt && (
+              <Button
+                color="error"
+                onClick={() => handleConfirmDialog(watch())}
+                size="large"
+                variant="outlined"
+              >
+                Delete
+              </Button>
+            )}
             <Button
               className="shadow"
               variant="contained"
               size="large"
               type="submit"
+              sx={{
+                ml: profile.isAdmin && createdAt ? 0 : 'auto',
+              }}
             >
               Save
             </Button>

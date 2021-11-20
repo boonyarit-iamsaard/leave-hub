@@ -1,18 +1,26 @@
 import { FC, Fragment } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+// import { isSameDay } from 'date-fns';
 
 import { Box } from '@mui/system';
-import { DatePicker } from '@mui/lab';
+import { MobileDatePicker } from '@mui/lab';
 import { TextField, Typography } from '@mui/material';
 
-const InputDatepicker: FC<{ label: string; name: string }> = ({
+// import useRoster from '../../hooks/useRoster';
+
+interface InputDatepickerProps {
+  name: string;
+  label: string;
+  minDate?: Date;
+}
+
+const InputDatepicker: FC<InputDatepickerProps> = ({
   label,
   name,
-}: {
-  label: string;
-  name: string;
+  minDate,
 }) => {
   const { control } = useFormContext();
+  // const { disabledDates } = useRoster();
 
   return (
     <Fragment>
@@ -27,11 +35,15 @@ const InputDatepicker: FC<{ label: string; name: string }> = ({
           name={name}
           control={control}
           render={({ field }) => (
-            <DatePicker
+            <MobileDatePicker
               inputFormat="dd MMMM yyyy"
-              desktopModeMediaQuery="@media (min-width: 960px)"
-              value={field.value}
+              minDate={minDate ? minDate : new Date('2000-01-01')}
               onChange={(date: Date | null) => field.onChange(date)}
+              // TODO: add shouldDisableDate
+              // shouldDisableDate={(date: Date) =>
+              //   !!disabledDates.find(d => isSameDay(d as Date, date))
+              // }
+              value={field.value}
               renderInput={params => (
                 <TextField fullWidth variant="outlined" {...params} />
               )}

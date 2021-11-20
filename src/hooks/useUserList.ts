@@ -2,13 +2,33 @@ import { useEffect, useState } from 'react';
 
 // firebase
 import { firestoreDatabase } from '../firebase/config';
-import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  FirestoreError,
+} from 'firebase/firestore';
 
 // interfaces
 import { Profile } from '../interfaces/auth.interface';
 import { RosterType } from '../interfaces/roster.interface';
 
 const referenceList = {
+  Engineer: [
+    'Patrick',
+    'Khomkrit',
+    'Mun',
+    'Amnuay',
+    'Kritsadakorn',
+    'Anusara',
+    'Tanakorn',
+    'Srisuphan',
+    'Chanon',
+    'Rattapichai',
+    'Weerachai',
+    'Sirikorn',
+  ],
   Mechanic: [
     'Thusnai',
     'Vitsanu',
@@ -35,14 +55,14 @@ const useUserList = (
 ): {
   userList: Profile[];
   loading: boolean;
-  error: unknown | null;
-  setUser: (user: Profile) => Promise<void>;
+  error: string | null;
+  setUserDocument: (user: Profile) => Promise<void>;
 } => {
   const [userList, setUserList] = useState<Profile[]>([] as Profile[]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<unknown | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const setUser = async (user: Profile): Promise<void> => {
+  const setUserDocument = async (user: Profile): Promise<void> => {
     setLoading(true);
 
     try {
@@ -50,9 +70,11 @@ const useUserList = (
       await setDoc(ref, user);
       setLoading(false);
     } catch (error) {
-      console.error(error);
+      error instanceof FirestoreError
+        ? setError(error.message)
+        : setError('An unknown error occurred.');
+
       setLoading(false);
-      setError(error);
     }
   };
 
@@ -81,13 +103,28 @@ const useUserList = (
         setUserList(sortedUserList);
       }
 
+      if (roster && roster === RosterType.Engineer) {
+        const filteredUserList = userList.filter(
+          user => user.roster === RosterType.Engineer
+        );
+
+        const sortedUserList = referenceList.Engineer.filter(name => name).map(
+          name => {
+            const user = filteredUserList.find(user => user.firstName === name);
+            return user ? user : ({ firstName: name } as Profile);
+          }
+        );
+
+        setUserList(sortedUserList);
+      }
+
       if (!roster) setUserList(userList);
     });
 
     return () => unsubscribe();
   }, [roster]);
 
-  return { userList, loading, error, setUser };
+  return { userList, loading, error, setUserDocument };
 };
 
 export default useUserList;

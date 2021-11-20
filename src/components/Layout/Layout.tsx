@@ -34,7 +34,7 @@ const Layout: FC<ReactNode> = ({ children }) => {
   return (
     <Box
       className="layout"
-      sx={{ display: 'flex', flexShrink: 0, height: '100%' }}
+      sx={{ display: 'flex', flexShrink: 0, minHeight: '100%' }}
     >
       <CssBaseline />
 
@@ -62,8 +62,7 @@ const Layout: FC<ReactNode> = ({ children }) => {
         sx={{
           background: theme.palette.grey['100'],
           flexGrow: 1,
-          px: 3,
-          py: 2,
+          p: 2,
           width: {
             xs: '100%',
             xl: `calc(100% - ${drawerWidth}px)`,

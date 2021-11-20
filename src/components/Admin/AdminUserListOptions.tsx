@@ -27,6 +27,7 @@ const AdminUserListOptions: FC<AdminUserListOptionsProps> = ({
         <EditIcon />
       </IconButton>
       <IconButton
+        disabled
         onClick={() => alert(JSON.stringify(params.value, null, 2))}
         aria-label="delete"
       >

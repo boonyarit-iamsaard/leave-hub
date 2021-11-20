@@ -1,37 +1,53 @@
-import { FC } from 'react';
-import { isSameDay } from 'date-fns';
+import { FC, useEffect, useState } from 'react';
 
 import useRosterHeader from '../../hooks/useRosterHeader';
 import useRoster from '../../hooks/useRoster';
 
 // styled components
-import { RosterRow, RosterCell } from './Roster.style';
+import { RosterBodyFirstColumn, RosterRow } from './Roster.style';
 
 // interfaces
 import { Profile } from '../../interfaces/auth.interface';
+import { Roster } from '../../interfaces/roster.interface';
 
-const RosterBody: FC<{ year: number; month: number; userList: Profile[] }> = ({
+// components
+import RosterBodyCell from './RosterBodyCell';
+
+interface RosterBodyProps {
+  year: number;
+  month: number;
+  userList: Profile[];
+  handleEditDialogOpen: (shift: Roster) => void;
+}
+
+const RosterBody: FC<RosterBodyProps> = ({
   year,
   month,
   userList,
+  handleEditDialogOpen,
 }) => {
+  const [rosterData, setRosterData] = useState<Roster[]>([] as Roster[]);
   const { daysAndDatesHeader } = useRosterHeader(year, month);
   const { roster } = useRoster(year, month);
 
-  const matchRoster = (uid: string, date: Date) => {
-    const shift = roster.find(
-      shift => isSameDay(shift.date, date) && shift.uid === uid
-    );
-
-    return shift ? shift.type.toUpperCase() : '';
-  };
+  useEffect(() => {
+    setRosterData(roster);
+  }, [roster]);
 
   return (
     <div>
-      {userList.map(user => (
-        <RosterRow key={user.uid}>
+      {userList.map((user, userIndex) => (
+        <RosterRow key={userIndex}>
+          <RosterBodyFirstColumn>{user.firstName}</RosterBodyFirstColumn>
+
           {daysAndDatesHeader().dates.map((date, index) => (
-            <RosterCell key={index}>{matchRoster(user.uid, date)}</RosterCell>
+            <RosterBodyCell
+              key={index}
+              roster={rosterData}
+              date={date}
+              uid={user.uid}
+              handleEditDialogOpen={handleEditDialogOpen}
+            />
           ))}
         </RosterRow>
       ))}

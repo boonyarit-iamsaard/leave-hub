@@ -7,11 +7,12 @@ import { styled } from '@mui/system';
 // components
 import { AdminUserForm, AdminUserList } from '../components/Admin';
 
-// hooks
-import useUserList from '../hooks/useUserList';
-
 // interfaces
 import { Profile } from '../interfaces/auth.interface';
+import { RosterType } from '../interfaces/roster.interface';
+
+// styled-components
+import { AdminPageContainer } from './AdminPage.style';
 
 const AdminPageHeader = styled('div')({
   display: 'flex',
@@ -20,10 +21,10 @@ const AdminPageHeader = styled('div')({
 });
 
 const AdminPage: FC = () => {
-  const { userList } = useUserList();
-  const [user, setUser] = useState<Profile>({} as Profile);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [rosterType, setRosterType] = useState<RosterType>(RosterType.Engineer);
+  const [user, setUser] = useState<Profile>({} as Profile);
 
   const handleDialogOpen = () => {
     setDialogOpen(!dialogOpen);
@@ -35,32 +36,61 @@ const AdminPage: FC = () => {
     handleDialogOpen();
   };
 
+  const handleSwitchRosterType = (type: RosterType) => {
+    setRosterType(type);
+  };
+
   return (
-    <div>
+    <AdminPageContainer>
       <AdminPageHeader style={{ marginBottom: 16 }}>
         <Typography variant="h6">Admin</Typography>
-
-        <Button
-          className="shadow"
-          variant="contained"
-          color="primary"
-          onClick={handleDialogOpen}
-        >
-          Add User
-        </Button>
+        <div>
+          <Button
+            color="primary"
+            disabled={rosterType === RosterType.Engineer}
+            onClick={() => handleSwitchRosterType(RosterType.Engineer)}
+            sx={{ mr: 2 }}
+            variant="outlined"
+          >
+            Engineer
+          </Button>
+          <Button
+            color="primary"
+            disabled={rosterType === RosterType.Mechanic}
+            onClick={() => handleSwitchRosterType(RosterType.Mechanic)}
+            sx={{ mr: 2 }}
+            variant="outlined"
+          >
+            Mechanic
+          </Button>
+          <Button
+            className="shadow"
+            variant="contained"
+            color="primary"
+            onClick={handleDialogOpen}
+          >
+            Add User
+          </Button>
+        </div>
       </AdminPageHeader>
-
-      <AdminUserList
-        handleEditDialogOpen={handleEditDialogOpen}
-        userList={userList}
-      />
-
+      {rosterType === RosterType.Engineer && (
+        <AdminUserList
+          handleEditDialogOpen={handleEditDialogOpen}
+          rosterType={RosterType.Engineer}
+        />
+      )}
+      {rosterType === RosterType.Mechanic && (
+        <AdminUserList
+          handleEditDialogOpen={handleEditDialogOpen}
+          rosterType={RosterType.Mechanic}
+        />
+      )}
       <AdminUserForm
         dialogOpen={dialogOpen}
         handleDialogOpen={handleDialogOpen}
         user={editMode ? user : undefined}
       />
-    </div>
+    </AdminPageContainer>
   );
 };
 

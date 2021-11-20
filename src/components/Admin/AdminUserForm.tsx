@@ -46,19 +46,19 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
   dialogOpen,
   user,
 }) => {
-  const { setUser, loading } = useUserList();
+  const { setUserDocument, loading } = useUserList();
   const methods = useForm<Profile>({
-    defaultValues,
+    defaultValues: { ...defaultValues },
   });
   const { handleSubmit, reset } = methods;
 
   const handleCloseForm = () => {
-    reset(defaultValues);
+    reset({ ...defaultValues });
     handleDialogOpen();
   };
 
   const handleSubmitAdminUserForm = async (data: Profile) => {
-    await setUser({
+    await setUserDocument({
       ...data,
       tyc: Number(data.tyc),
       entitled: Number(data.entitled),

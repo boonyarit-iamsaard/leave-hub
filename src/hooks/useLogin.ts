@@ -35,17 +35,11 @@ const useLogin = (): {
       setIsPending(false);
       return response.user;
     } catch (error) {
-      if (error as AuthError) {
-        setIsPending(false);
-        setError((error as AuthError).message);
-
-        return;
-      }
+      (error as AuthError)
+        ? setError((error as AuthError).message)
+        : setError('An unknown error occurred.');
 
       setIsPending(false);
-      setError('An unknown error occurred.');
-
-      return;
     }
   };
 
