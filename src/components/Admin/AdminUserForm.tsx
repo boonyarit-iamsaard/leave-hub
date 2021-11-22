@@ -54,7 +54,16 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
   const { handleSubmit, reset } = methods;
 
   const handleCloseForm = () => {
-    reset({ ...defaultValues });
+    reset({
+      uid: '',
+      firstName: '',
+      lastName: '',
+      isAdmin: false,
+      roster: RosterType.Mechanic,
+      entitled: 0,
+      tyc: 0,
+      carryover: 0,
+    });
     handleDialogOpen();
   };
 
@@ -72,7 +81,17 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
   useEffect(() => {
     if (user) {
       reset({ ...user, carryover: user.carryover || 0 });
-    }
+    } else
+      reset({
+        uid: '',
+        firstName: '',
+        lastName: '',
+        isAdmin: false,
+        roster: RosterType.Mechanic,
+        entitled: 0,
+        tyc: 0,
+        carryover: 0,
+      });
   }, [reset, user]);
 
   return (
@@ -92,7 +111,7 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleSubmitAdminUserForm)}>
-          <DialogTitle sx={{ p: 2 }}>Add new user</DialogTitle>
+          <DialogTitle sx={{ p: 2 }}>User Form</DialogTitle>
 
           <Divider />
 
