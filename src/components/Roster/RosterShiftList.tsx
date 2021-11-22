@@ -118,13 +118,6 @@ const RosterShiftList: FC<RosterShiftListProps> = ({
     },
   ];
 
-  console.log('RosterShiftList<rosterType>: ', rosterType);
-  console.log('RosterShiftList<userList>: ', userList);
-  console.log('RosterShiftList<filteredShiftList>: ', filteredShiftList);
-  console.log('RosterShiftList<year>: ', year);
-  console.log('RosterShiftList<month>: ', month);
-  console.log('RosterShiftList<rows>: ', rows);
-
   useEffect(() => {
     const filteredShiftList = shiftList.filter(shift => {
       const { startDate, endDate } = shift;
