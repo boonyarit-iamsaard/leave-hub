@@ -21,6 +21,9 @@ import { Box } from '@mui/system';
 // components
 import LayoutTitle from './LayoutTitle';
 
+// hooks
+import useProfile from '../../hooks/useProfile';
+
 // interfaces
 interface ListItemLinkProps {
   icon?: ReactElement;
@@ -59,6 +62,7 @@ const ListItemLink: FC<ListItemLinkProps> = ({
 const LayoutSidebarList: FC<{ handleDrawerToggle: () => void }> = ({
   handleDrawerToggle,
 }) => {
+  const { profile } = useProfile();
   const listItems: ListItemLinkProps[] = [
     {
       to: '/',
@@ -93,12 +97,14 @@ const LayoutSidebarList: FC<{ handleDrawerToggle: () => void }> = ({
 
           <Divider sx={{ my: 1 }} />
 
-          <ListItemLink
-            to="/admin"
-            primary="Admin"
-            icon={<SupervisorAccountRoundedIcon />}
-            onClick={handleDrawerToggle}
-          />
+          {profile.isAdmin && (
+            <ListItemLink
+              to="/admin"
+              primary="Admin"
+              icon={<SupervisorAccountRoundedIcon />}
+              onClick={handleDrawerToggle}
+            />
+          )}
         </List>
       </Box>
     </div>

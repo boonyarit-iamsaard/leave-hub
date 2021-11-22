@@ -1,7 +1,13 @@
-import { FC, useEffect, useState } from 'react';
-import { format } from 'date-fns';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 
-import { Button, Typography } from '@mui/material';
+// mui
+import {
+  Button,
+  FormControl,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { Box, styled } from '@mui/system';
 
 // components
@@ -24,6 +30,31 @@ import {
 import { ref, remove } from '@firebase/database';
 import { realtimeDatabase } from '../firebase/config';
 
+const selectMonthOptions = [
+  { value: 0, label: 'January' },
+  { value: 1, label: 'February' },
+  { value: 2, label: 'March' },
+  { value: 3, label: 'April' },
+  { value: 4, label: 'May' },
+  { value: 5, label: 'June' },
+  { value: 6, label: 'July' },
+  { value: 7, label: 'August' },
+  { value: 8, label: 'September' },
+  { value: 9, label: 'October' },
+  { value: 10, label: 'November' },
+  { value: 11, label: 'December' },
+];
+
+const selectYearOptions = (): { value: number; label: string }[] => {
+  const currentYear = new Date().getFullYear() - 3;
+  const yearOptions: { value: number; label: string }[] = [];
+
+  for (let i = currentYear; i < currentYear + 10; i++) {
+    yearOptions.push({ value: i, label: i.toString() });
+  }
+  return yearOptions;
+};
+
 const RosterPageContainer = styled('div')(({ theme }) => ({
   width: '100%',
   maxWidth: theme.breakpoints.values.lg,
@@ -37,9 +68,10 @@ const RosterPageHeader = styled('div')({
 });
 
 const RosterPage: FC = () => {
-  const { daysOff } = useDaysOff();
+  const { findDayOff } = useDaysOff();
   const { profile } = useProfile();
   const { removeShiftDocument, shiftList } = useShiftList();
+  const [isDeletePending, setIsDeletePending] = useState(false);
   const [rosterType, setRosterType] = useState<RosterType>(RosterType.Mechanic);
   const [shift, setShift] = useState<Shift>({} as Shift);
   const [year, setYear] = useState(2022);
@@ -71,11 +103,14 @@ const RosterPage: FC = () => {
   };
 
   const handleDeleteShift = async (shift: Shift): Promise<void> => {
+    setIsDeletePending(true);
     if (shift.type === ShiftType.X) {
       const docRef = ref(realtimeDatabase, 'days-off/' + shift.id);
       await remove(docRef);
+      setIsDeletePending(false);
     } else {
       await removeShiftDocument(shift);
+      setIsDeletePending(false);
     }
 
     setConfirmDialog(prevState => ({ ...prevState, open: false }));
@@ -88,7 +123,7 @@ const RosterPage: FC = () => {
     let selectedShift: Shift | undefined;
 
     roster.type === ShiftType.X
-      ? (selectedShift = daysOff.find(dayOff => dayOff.id === roster.shiftId))
+      ? (selectedShift = findDayOff(roster))
       : (selectedShift = shiftList.find(shift => shift.id === roster.shiftId));
 
     selectedShift && setShift(selectedShift);
@@ -120,6 +155,12 @@ const RosterPage: FC = () => {
     }
   };
 
+  const handleYearChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setYear(Number(event.target.value));
+
+  const handleMonthChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setMonth(Number(event.target.value));
+
   useEffect(() => {
     const rosterBody = document.getElementById('roster-body');
     rosterBody?.scrollTo({
@@ -136,6 +177,7 @@ const RosterPage: FC = () => {
   return (
     <RosterPageContainer className="roster-page__container">
       <ConfirmDialog
+        isConfirmPending={isDeletePending}
         open={confirmDialog.open}
         title={confirmDialog.title}
         message={confirmDialog.message}
@@ -188,9 +230,53 @@ const RosterPage: FC = () => {
           Previous
         </Button>
 
-        <Typography variant="h5">
-          {format(new Date(year, month), 'MMMM yyyy')}
-        </Typography>
+        <div>
+          <FormControl
+            variant="outlined"
+            className="roster-page__form-control"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'white',
+              },
+            }}
+          >
+            <TextField
+              onChange={handleMonthChange}
+              select
+              size="small"
+              sx={{ mr: 1 }}
+              value={month}
+            >
+              {selectMonthOptions.map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </FormControl>
+          <FormControl
+            variant="outlined"
+            className="roster-page__form-control"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'white',
+              },
+            }}
+          >
+            <TextField
+              select
+              value={year}
+              size="small"
+              onChange={handleYearChange}
+            >
+              {selectYearOptions().map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </FormControl>
+        </div>
 
         <Button variant="outlined" onClick={handleNextClick}>
           Next
@@ -201,6 +287,7 @@ const RosterPage: FC = () => {
         dialogOpen={dialogOpen}
         handleConfirmDialog={handleConfirmDialogOpen}
         handleDialogOpen={handleDialogOpen}
+        isDeletePending={isDeletePending}
         month={month}
         profile={profile}
         rosterType={rosterType}

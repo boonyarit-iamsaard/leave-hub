@@ -19,7 +19,8 @@ const ProfilePage: FC = () => {
     <div>
       <Box
         sx={{
-          p: 2,
+          px: 2,
+          pb: 2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',

@@ -39,8 +39,10 @@ const RosterContainer: FC<RosterContainerProps> = ({
       sx={{
         display: 'flex',
         flexShrink: 0,
-        p: 2,
-        maxHeight: 600,
+        px: 2,
+        pt: 2,
+        pb: 0,
+        minHeight: 'min-content',
       }}
     >
       <Box id="roster-body" sx={{ overflow: 'auto' }}>

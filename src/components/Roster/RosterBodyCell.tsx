@@ -12,6 +12,8 @@ import {
 import { RosterCell } from './Roster.style';
 import { Badge, useTheme } from '@mui/material';
 
+import useProfile from '../../hooks/useProfile';
+
 interface RosterBodyCellProps {
   roster: Roster[];
   date: Date;
@@ -26,6 +28,7 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
   handleEditDialogOpen,
 }) => {
   const theme = useTheme();
+  const { profile } = useProfile();
   const shift = roster.find(
     shift => isSameDay(shift.date, date) && shift.uid === uid
   );
@@ -49,9 +52,9 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
   return shift?.status === ShiftStatus.Pending ? (
     <Badge color="warning" badgeContent="!">
       <RosterCell
-        onClick={handlerClickCell}
+        onClick={profile.isAdmin ? handlerClickCell : undefined}
         style={{
-          cursor: shift ? 'pointer' : 'default',
+          cursor: shift && profile.isAdmin ? 'pointer' : 'default',
           backgroundColor: shift ? shiftColor[shift.priority] : '#fff',
           color:
             shift?.priority === ShiftPriority.TYC ||
@@ -65,9 +68,9 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
     </Badge>
   ) : (
     <RosterCell
-      onClick={handlerClickCell}
+      onClick={profile.isAdmin ? handlerClickCell : undefined}
       style={{
-        cursor: shift ? 'pointer' : 'default',
+        cursor: shift && profile.isAdmin ? 'pointer' : 'default',
         backgroundColor: shift ? shiftColor[shift.priority] : '#fff',
         color:
           shift?.priority === ShiftPriority.TYC ||

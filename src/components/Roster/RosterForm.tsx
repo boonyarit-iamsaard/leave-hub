@@ -82,6 +82,7 @@ interface RostersFormProps {
   dialogOpen: boolean;
   handleConfirmDialog: (shift: Shift) => void;
   handleDialogOpen: () => void;
+  isDeletePending: boolean;
   month: number;
   profile: Profile;
   shift?: Shift;
@@ -93,12 +94,14 @@ const RosterForm: FC<RostersFormProps> = ({
   dialogOpen,
   handleConfirmDialog,
   handleDialogOpen,
+  isDeletePending,
   month,
   profile,
   shift,
   year,
   rosterType = RosterType.Mechanic,
 }) => {
+  const [isPending, setIsPending] = useState(false);
   const [shouldDisabled, setShouldDisabled] = useState(false);
   const { setShiftDocument } = useShiftList();
   const { userList } = useUserList(rosterType);
@@ -144,6 +147,7 @@ const RosterForm: FC<RostersFormProps> = ({
   };
 
   const handleSubmitRosterForm = async (data: Shift) => {
+    setIsPending(true);
     if (!data.createdAt) {
       data.createdAt = Date.now();
       data.updatedAt = Date.now();
@@ -157,8 +161,10 @@ const RosterForm: FC<RostersFormProps> = ({
         startDate: format(data.startDate, 'yyyy-MM-dd'),
         endDate: format(data.endDate, 'yyyy-MM-dd'),
       });
+      setIsPending(false);
     } else {
       await setShiftDocument(data);
+      setIsPending(false);
     }
 
     handleCloseForm();
@@ -295,15 +301,17 @@ const RosterForm: FC<RostersFormProps> = ({
             {profile.isAdmin && createdAt && (
               <Button
                 color="error"
+                disabled={isPending || isDeletePending}
                 onClick={() => handleConfirmDialog(watch())}
                 size="large"
                 variant="outlined"
               >
-                Delete
+                {isDeletePending ? 'Deleting...' : 'Delete'}
               </Button>
             )}
             <Button
-              className="shadow"
+              className={isPending ? '' : 'shadow'}
+              disabled={isPending}
               variant="contained"
               size="large"
               type="submit"
@@ -311,7 +319,7 @@ const RosterForm: FC<RostersFormProps> = ({
                 ml: profile.isAdmin && createdAt ? 0 : 'auto',
               }}
             >
-              Save
+              {isPending ? 'Saving...' : 'Save'}
             </Button>
           </DialogActions>
         </form>

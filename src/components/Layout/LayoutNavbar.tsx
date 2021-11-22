@@ -7,6 +7,7 @@ import {
   Button,
   IconButton,
   Toolbar,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -18,12 +19,13 @@ import { LayoutProps } from './Layout';
 // components
 import LayoutTitle from './LayoutTitle';
 
-// hooks
 // custom hooks
 import useLogout from '../../hooks/useLogout';
+import useProfile from '../../hooks/useProfile';
 
 const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
   const { logout } = useLogout();
+  const { profile } = useProfile();
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('lg'));
@@ -59,11 +61,26 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
           {!matches && <LayoutTitle />}
         </Box>
 
-        <Box>
-          <Button onClick={handleLogout} sx={{ color: 'text.secondary' }}>
-            Logout
-          </Button>
-        </Box>
+        {profile && (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography
+              sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}
+              variant="body2"
+            >
+              {profile.firstName} {profile.lastName}
+            </Typography>
+            <Box>
+              <Button
+                color="secondary"
+                onClick={handleLogout}
+                sx={{ color: 'text.secondary' }}
+                variant="outlined"
+              >
+                Logout
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Toolbar>
     </AppBar>
   );

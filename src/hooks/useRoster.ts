@@ -14,7 +14,10 @@ import { Roster, Shift, ShiftStatus } from '../interfaces/roster.interface';
 const useRoster = (
   year = 2022,
   month = 0
-): { disabledDates: (Date | null)[]; roster: Roster[] } => {
+): {
+  disabledDates: (Date | null)[];
+  roster: Roster[];
+} => {
   const [disabledDates, setDisabledDates] = useState<(Date | null)[]>([]);
   const [roster, setRoster] = useState<Roster[]>([]);
   const { daysOff } = useDaysOff();

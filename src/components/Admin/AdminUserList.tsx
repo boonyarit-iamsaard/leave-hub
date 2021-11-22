@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 // mui
 import { Card } from '@mui/material';
@@ -7,6 +7,8 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridRowsProp,
+  GridSortDirection,
+  GridSortModel,
 } from '@mui/x-data-grid';
 
 // interfaces
@@ -30,6 +32,13 @@ const AdminUserList: FC<AdminUserListProps> = ({
   rosterType = RosterType.Mechanic,
 }) => {
   const { adminSummary } = useAdminSummary(rosterType);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    {
+      field: 'firstName',
+      sort: 'asc' as GridSortDirection,
+    },
+  ]);
 
   const rows: GridRowsProp = adminSummary.map(summary => ({
     id: summary.user.uid,
@@ -75,7 +84,7 @@ const AdminUserList: FC<AdminUserListProps> = ({
     {
       field: 'options',
       headerName: 'Options',
-      width: 150,
+      width: 100,
       renderCell: (params: GridRenderCellParams<Profile>) => {
         return (
           <AdminUserListOptions
@@ -94,9 +103,13 @@ const AdminUserList: FC<AdminUserListProps> = ({
           <DataGrid
             autoHeight
             columns={columns}
-            pageSize={10}
+            onPageSizeChange={pageSize => setPageSize(pageSize)}
+            onSortModelChange={model => setSortModel(model)}
+            pageSize={pageSize}
+            pagination
             rows={rows}
-            rowsPerPageOptions={[10, 25, 50, 100]}
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            sortModel={sortModel}
           />
         </Card>
       </div>

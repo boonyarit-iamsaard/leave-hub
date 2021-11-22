@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 
 interface ConfirmDialogProps {
+  isConfirmPending: boolean;
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -17,6 +18,7 @@ interface ConfirmDialogProps {
 }
 
 const ConfirmDialog: FC<ConfirmDialogProps> = ({
+  isConfirmPending,
   open,
   onClose,
   onConfirm,
@@ -50,6 +52,7 @@ const ConfirmDialog: FC<ConfirmDialogProps> = ({
       >
         <Button
           color="secondary"
+          disabled={isConfirmPending}
           onClick={onClose}
           size="large"
           variant="outlined"
@@ -57,13 +60,14 @@ const ConfirmDialog: FC<ConfirmDialogProps> = ({
           Cancel
         </Button>
         <Button
-          className="shadow"
+          className={isConfirmPending ? '' : 'shadow'}
           color="error"
+          disabled={isConfirmPending}
           onClick={onConfirm}
           size="large"
           variant="contained"
         >
-          Confirm
+          {isConfirmPending ? 'Deleting...' : 'Delete'}
         </Button>
       </DialogActions>
     </Dialog>
