@@ -35,6 +35,7 @@ const defaultValues: Profile = {
   roster: RosterType.Mechanic,
   entitled: 0,
   tyc: 0,
+  carryover: 0,
 };
 const rosterTypeOptions = [
   { value: RosterType.Mechanic, label: 'Mechanic' },
@@ -62,6 +63,7 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
       ...data,
       tyc: Number(data.tyc),
       entitled: Number(data.entitled),
+      carryover: Number(data.carryover),
     }).then(() => {
       handleCloseForm();
     });
@@ -69,7 +71,7 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
 
   useEffect(() => {
     if (user) {
-      reset(user);
+      reset({ ...user, carryover: user.carryover || 0 });
     }
   }, [reset, user]);
 
@@ -115,6 +117,8 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
             <InputTextField name="entitled" label="Entitled" type="number" />
 
             <InputTextField name="tyc" label="TYC Entitled" type="number" />
+
+            <InputTextField name="carryover" label="Carryover?" type="number" />
           </DialogContent>
 
           <Divider />

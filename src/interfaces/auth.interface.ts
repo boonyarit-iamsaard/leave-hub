@@ -30,4 +30,5 @@ export interface Profile {
   roster: RosterType;
   tyc: number;
   uid: string;
+  carryover?: number;
 }

@@ -94,10 +94,7 @@ const ProfilePage: FC = () => {
                   <Typography color="grey.600" variant="body1">
                     {detail.label}
                   </Typography>
-                  <Typography
-                    color={detail.value <= 0 ? 'error' : 'grey.800'}
-                    variant="h6"
-                  >
+                  <Typography color="grey.800" variant="h6">
                     {detail.value ? detail.value : 0}
                   </Typography>
                 </Box>

@@ -66,6 +66,11 @@ const useProfileSummary = (): {
           ((profile.entitled - shiftsCount.shifts.ANL) / profile.entitled) * 100
         ).toFixed(2),
       },
+      {
+        label: 'Carryover',
+        value: profile.carryover ? profile.carryover : 0,
+        percentage: 'N/A',
+      },
     ],
     [profile, shiftsCount.shifts.ANL]
   );

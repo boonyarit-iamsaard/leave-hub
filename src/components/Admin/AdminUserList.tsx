@@ -46,6 +46,8 @@ const AdminUserList: FC<AdminUserListProps> = ({
     lastName: summary.user.lastName,
     entitled: summary.user.entitled,
     used: summary.total,
+    tyc: summary.user.tyc,
+    carryover: summary.user.carryover || 0,
     options: summary.user,
   }));
 
@@ -53,21 +55,25 @@ const AdminUserList: FC<AdminUserListProps> = ({
     {
       field: 'firstName',
       headerName: 'First Name',
+      minWidth: 150,
       flex: 1,
     },
     {
       field: 'lastName',
       headerName: 'Last Name',
+      minWidth: 150,
       flex: 1,
     },
     {
       field: 'entitled',
       headerName: 'Entitled',
+      minWidth: 100,
       flex: 1,
     },
     {
       field: 'used',
       headerName: 'Used',
+      minWidth: 100,
       flex: 1,
       renderCell: params => {
         const entitled = params.getValue(params.id, 'entitled');
@@ -82,9 +88,22 @@ const AdminUserList: FC<AdminUserListProps> = ({
       },
     },
     {
+      field: 'tyc',
+      headerName: 'TYC',
+      minWidth: 80,
+      flex: 1,
+    },
+    {
+      field: 'carryover',
+      headerName: 'Carryover',
+      minWidth: 100,
+      flex: 1,
+    },
+    {
       field: 'options',
       headerName: 'Options',
-      width: 100,
+      minWidth: 100,
+      flex: 1,
       renderCell: (params: GridRenderCellParams<Profile>) => {
         return (
           <AdminUserListOptions
