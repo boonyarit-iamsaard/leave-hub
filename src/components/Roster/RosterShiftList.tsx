@@ -46,6 +46,9 @@ const RosterShiftList: FC<RosterShiftListProps> = ({
   const getName = (uid: string) =>
     userList.find(user => user.uid === uid)?.firstName || 'N/A';
 
+  const getTimestamp = (date: number) =>
+    format(new Date(date), 'yyyy-MM-dd HH:mm');
+
   const rows: GridRowsProp = filteredShiftList.map((shift: Shift) => ({
     id: shift.id,
     startDate: shift.startDate,
@@ -54,6 +57,7 @@ const RosterShiftList: FC<RosterShiftListProps> = ({
     type: shift.type,
     priority: shift.priority,
     status: shift.status,
+    createdAt: getTimestamp(shift.createdAt as number),
     options: shift,
   }));
 
@@ -93,13 +97,19 @@ const RosterShiftList: FC<RosterShiftListProps> = ({
     {
       field: 'priority',
       headerName: 'Priority',
-      minWidth: 100,
+      minWidth: 80,
       flex: 1,
     },
     {
       field: 'status',
       headerName: 'Status',
-      minWidth: 100,
+      minWidth: 90,
+      flex: 1,
+    },
+    {
+      field: 'createdAt',
+      headerName: 'Created',
+      minWidth: 140,
       flex: 1,
     },
     {
