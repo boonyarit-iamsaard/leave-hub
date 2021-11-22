@@ -22,7 +22,7 @@ const useDaysOff = (): {
     const daysOffListener = onValue(
       daysOffRef,
       snapshot => {
-        const daysOff: Shift[] = [];
+        const daysOffSnapshot: Shift[] = [];
         snapshot.forEach(childSnapshot => {
           const dayOff: Shift = {
             ...childSnapshot.val(),
@@ -32,14 +32,14 @@ const useDaysOff = (): {
             endDate: new Date(childSnapshot.val().endDate),
           };
 
-          daysOff.push(dayOff);
+          daysOffSnapshot.push(dayOff);
         });
 
-        setDaysOff(daysOff);
-      },
-      {
-        onlyOnce: true,
+        setDaysOff(daysOffSnapshot);
       }
+      // {
+      //   onlyOnce: true,
+      // }
     );
 
     return () => {
