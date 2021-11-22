@@ -15,21 +15,19 @@ import { Card } from '@mui/material';
 import useShiftList from '../../hooks/useShiftList';
 import useUserList from '../../hooks/useUserList';
 
-import { RosterType, Shift } from '../../interfaces/roster.interface';
+import { Shift } from '../../interfaces/roster.interface';
 import { RosterShiftListOptions } from '.';
 
 interface RosterShiftListProps {
   handleEditShift: (shift: Shift) => void;
   year: number;
   month: number;
-  rosterType: RosterType;
 }
 
 const RosterShiftList: FC<RosterShiftListProps> = ({
   handleEditShift,
   year = 2022,
   month = 0,
-  rosterType = RosterType.Mechanic,
 }) => {
   const [filteredShiftList, setFilteredShiftList] = useState<Shift[]>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -40,7 +38,7 @@ const RosterShiftList: FC<RosterShiftListProps> = ({
     },
   ]);
 
-  const { userList } = useUserList(rosterType);
+  const { userList } = useUserList();
   const { shiftList } = useShiftList();
 
   const getName = (uid: string) =>

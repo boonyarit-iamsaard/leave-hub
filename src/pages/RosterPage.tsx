@@ -137,6 +137,7 @@ const RosterPage: FC = () => {
 
   const handleEditShift = (shift: Shift): void => {
     setShift(shift);
+    setRosterType(shift.roster);
     setEditMode(true);
     setDialogOpen(!dialogOpen);
   };
@@ -319,7 +320,6 @@ const RosterPage: FC = () => {
           handleEditShift={handleEditShift}
           month={month}
           year={year}
-          rosterType={RosterType.Engineer}
         />
       )}
     </RosterPageContainer>
