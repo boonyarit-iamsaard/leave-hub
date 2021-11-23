@@ -14,15 +14,17 @@ import { Card } from '@mui/material';
 import { ProfileShiftListContainer } from './ProfileShiftList.style';
 
 // hooks
-import useProfile from '../../hooks/useProfile';
 import useShiftList from '../../hooks/useShiftList';
 
 // interfaces
 import { Shift } from '../../interfaces/roster.interface';
 import { format } from 'date-fns';
 
-const ProfileShiftList: FC = () => {
-  const { profile } = useProfile();
+interface ProfileShiftListProps {
+  selectedProfile: string | null;
+}
+
+const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
   const { shiftList } = useShiftList();
   const [filteredShiftList, setFilteredShiftList] = useState<Shift[]>(
     [] as Shift[]
@@ -30,7 +32,7 @@ const ProfileShiftList: FC = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: 'startDate',
-      sort: 'desc',
+      sort: 'asc',
     },
   ]);
 
@@ -84,14 +86,17 @@ const ProfileShiftList: FC = () => {
   ];
 
   useEffect(() => {
-    const filteredShiftList = shiftList.filter(shift => {
-      return shift.uid === profile.uid;
-    });
+    let filteredShiftList: Shift[] = [];
+    if (selectedProfile) {
+      filteredShiftList = shiftList.filter(shift => {
+        return shift.uid === selectedProfile;
+      });
+    }
 
     setFilteredShiftList(filteredShiftList);
-  }, [shiftList, profile.uid]);
+  }, [shiftList, selectedProfile]);
 
-  return (
+  return selectedProfile ? (
     <ProfileShiftListContainer className="profile-shifter-list__container">
       <div style={{ flexGrow: 1 }}>
         <Card className="shadow">
@@ -107,7 +112,7 @@ const ProfileShiftList: FC = () => {
         </Card>
       </div>
     </ProfileShiftListContainer>
-  );
+  ) : null;
 };
 
 export default ProfileShiftList;

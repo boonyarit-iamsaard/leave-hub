@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { addDays, compareAsc } from 'date-fns';
 
-import useProfile from './useProfile';
 import useShiftList from './useShiftList';
 
 import { Shift, ShiftStatus } from '../interfaces/roster.interface';
+import useUserList from './useUserList';
+import { Profile } from '../interfaces/auth.interface';
 
-const useProfileSummary = (): {
+const useProfileSummary = (
+  uid: string
+): {
   prioritySummary: () => {
     label: string;
     value: number;
@@ -18,7 +21,8 @@ const useProfileSummary = (): {
   }[];
 } => {
   // hooks
-  const { profile } = useProfile();
+  const [profile, setProfile] = useState<Profile>({} as Profile);
+  const { userList } = useUserList();
   const { shiftList } = useShiftList();
   // local states
   const [filteredShifts, setFilteredShifts] = useState<Shift[]>([] as Shift[]);
@@ -136,6 +140,11 @@ const useProfileSummary = (): {
 
     setShiftsCount({ priorities, shifts });
   }, [filteredShifts]);
+
+  useEffect(() => {
+    const profile = userList.find(user => user.uid === uid);
+    if (profile) setProfile(profile);
+  }, [userList, uid]);
 
   useEffect(() => {
     const filteredShifts = shiftList.filter(shift => shift.uid === profile.uid);
