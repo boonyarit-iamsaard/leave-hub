@@ -40,8 +40,9 @@ const ProfilePage: FC = () => {
   const [selectedProfile, setSelectedProfile] = useState<string>('');
   const { profile } = useProfile();
   const { userList } = useUserList();
-  const { profileSummary, prioritySummary } =
-    useProfileSummary(selectedProfile);
+  const { profileSummary, prioritySummary } = useProfileSummary(
+    profile.isAdmin ? selectedProfile : profile.uid
+  );
 
   const options = profileUserListOptions(userList);
 
@@ -96,7 +97,6 @@ const ProfilePage: FC = () => {
             }}
           >
             {profile &&
-              profileSummary &&
               profileSummary().map(detail => (
                 <Box
                   key={detail.label}
@@ -148,7 +148,9 @@ const ProfilePage: FC = () => {
           </Box>
         </Card>
       </ProfilePageSummaryContainer>
-      <ProfileShiftList selectedProfile={selectedProfile} />
+      <ProfileShiftList
+        selectedProfile={profile.isAdmin ? selectedProfile : profile.uid}
+      />
     </div>
   );
 };
