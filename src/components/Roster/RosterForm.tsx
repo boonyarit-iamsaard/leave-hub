@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { format } from 'date-fns';
+import { format, isBefore } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -32,6 +32,7 @@ import { Profile } from '../../interfaces/auth.interface';
 // hooks
 import useShiftList from '../../hooks/useShiftList';
 import useUserList from '../../hooks/useUserList';
+import useProfileSummary from '../../hooks/useProfileSummary';
 
 // TODO: move to constants folder
 // form constants
@@ -101,10 +102,12 @@ const RosterForm: FC<RostersFormProps> = ({
   year,
   rosterType = RosterType.Mechanic,
 }) => {
+  const [currentUid, setCurrentUid] = useState<string>(profile.uid);
   const [isPending, setIsPending] = useState(false);
   const [shouldDisabled, setShouldDisabled] = useState(false);
   const { setShiftDocument } = useShiftList();
   const { userList } = useUserList(rosterType);
+  const { shiftsCount } = useProfileSummary(currentUid);
 
   const methods = useForm<Shift>({
     defaultValues: {
@@ -112,19 +115,32 @@ const RosterForm: FC<RostersFormProps> = ({
     },
   });
   const { handleSubmit, reset, watch, setValue } = methods;
-  const { startDate, type, createdAt } = watch();
+  const { startDate, endDate, type, createdAt, uid } = watch();
 
   const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
   const disabledShiftPriorities = () => {
+    const defaultDisabled: string[] = [ShiftType.X, ShiftType.ANL];
+    const { priorities } = shiftsCount;
+    const isTYCAssigned = profile.tyc > 0;
+    const isTYCUsed = priorities.TYC > 0;
+    const isANL1Used = priorities.ANL1 > 0;
+    const isANL2Used = priorities.ANL2 > 0;
+    const isANLType = type === ShiftType.ANL;
+
     if (profile.isAdmin) return [];
 
-    if (profile.tyc > 0 && type === ShiftType.ANL)
-      return [ShiftType.X, ShiftType.ANL, ShiftType.H];
+    if (isANLType) {
+      let disabled = [...defaultDisabled, ShiftType.H];
+      if (isANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
+      if (isANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
+      if (isTYCAssigned && isTYCUsed)
+        disabled = [...disabled, ShiftPriority.TYC];
+      if (!isTYCAssigned) disabled = [...disabled, ShiftPriority.TYC];
 
-    if (profile.tyc === 0 && type === ShiftType.ANL)
-      return [ShiftType.X, ShiftType.ANL, ShiftType.H, ShiftPriority.TYC];
+      return disabled;
+    }
 
-    return [ShiftType.X, ShiftType.ANL, ShiftPriority.TYC];
+    return defaultDisabled;
   };
 
   const handleCloseForm = () => {
@@ -145,7 +161,6 @@ const RosterForm: FC<RostersFormProps> = ({
 
     handleDialogOpen();
   };
-
   const handleSubmitRosterForm = async (data: Shift) => {
     setIsPending(true);
     if (!data.createdAt) {
@@ -196,7 +211,8 @@ const RosterForm: FC<RostersFormProps> = ({
     if (!shift) {
       setValue('endDate', startDate);
     }
-  }, [startDate, setValue, shift]);
+    if (isBefore(endDate, startDate)) setValue('endDate', startDate);
+  }, [startDate, endDate, setValue, shift]);
 
   useEffect(() => {
     if (type === ShiftType.X) {
@@ -222,6 +238,12 @@ const RosterForm: FC<RostersFormProps> = ({
       setValue('uid', userList[0].uid);
     }
   }, [rosterType, setValue, userList, profile]);
+
+  useEffect(() => {
+    if (uid) {
+      setCurrentUid(uid);
+    }
+  }, [uid]);
 
   return (
     <Dialog

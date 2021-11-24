@@ -3,7 +3,12 @@ import { addDays, compareAsc } from 'date-fns';
 
 import useShiftList from './useShiftList';
 
-import { Shift, ShiftStatus } from '../interfaces/roster.interface';
+import {
+  Shift,
+  ShiftPriority,
+  ShiftStatus,
+  ShiftType,
+} from '../interfaces/roster.interface';
 import useUserList from './useUserList';
 import { Profile } from '../interfaces/auth.interface';
 
@@ -19,6 +24,14 @@ const useProfileSummary = (
     value: number;
     percentage: string;
   }[];
+  shiftsCount: {
+    shifts: {
+      [key in ShiftType]: number;
+    };
+    priorities: {
+      [key in ShiftType | ShiftPriority]: number;
+    };
+  };
 } => {
   // hooks
   const [profile, setProfile] = useState<Profile>({} as Profile);
@@ -155,7 +168,7 @@ const useProfileSummary = (
     getShiftsCount();
   }, [filteredShifts, getShiftsCount]);
 
-  return { prioritySummary, profileSummary };
+  return { prioritySummary, profileSummary, shiftsCount };
 };
 
 export default useProfileSummary;
