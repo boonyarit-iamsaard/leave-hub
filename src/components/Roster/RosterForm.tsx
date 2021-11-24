@@ -208,9 +208,6 @@ const RosterForm: FC<RostersFormProps> = ({
   }, [year, month, reset, profile, shift, rosterType, userList]);
 
   useEffect(() => {
-    if (!shift) {
-      setValue('endDate', startDate);
-    }
     if (isBefore(endDate, startDate)) setValue('endDate', startDate);
   }, [startDate, endDate, setValue, shift]);
 
@@ -279,12 +276,19 @@ const RosterForm: FC<RostersFormProps> = ({
               />
             )}
 
-            <InputDatepicker label="Start Date" name="startDate" />
+            <InputDatepicker
+              label="Start Date"
+              name="startDate"
+              year={year}
+              month={month}
+            />
 
             <InputDatepicker
               label="End Date"
               minDate={startDate}
               name="endDate"
+              year={year}
+              month={month}
             />
 
             <InputSelect

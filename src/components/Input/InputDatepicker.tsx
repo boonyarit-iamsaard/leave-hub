@@ -1,4 +1,4 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { isSameDay } from 'date-fns';
 
@@ -12,6 +12,8 @@ import useProfile from '../../hooks/useProfile';
 interface InputDatepickerProps {
   name: string;
   label: string;
+  year: number;
+  month: number;
   minDate?: Date;
 }
 
@@ -30,14 +32,21 @@ const InputDatepicker: FC<InputDatepickerProps> = ({
   label,
   name,
   minDate,
+  year,
+  month,
 }) => {
+  const [isStartDateOccupied, setIsStartDateOccupied] = useState(false);
+  const [isEndDateOccupied, setIsEndDateOccupied] = useState(false);
+
   const { control, watch } = useFormContext();
-  const { disabledDates } = useRoster();
+  const { disabledDates } = useRoster(year, month);
   const { profile } = useProfile();
   const { endDate, startDate } = watch();
 
-  const isStartDateOccupied = shouldDisableDate(startDate, disabledDates);
-  const isEndDateOccupied = shouldDisableDate(endDate, disabledDates);
+  useEffect(() => {
+    setIsStartDateOccupied(shouldDisableDate(startDate, disabledDates));
+    setIsEndDateOccupied(shouldDisableDate(endDate, disabledDates));
+  }, [startDate, endDate, disabledDates]);
 
   return (
     <Fragment>
@@ -57,7 +66,7 @@ const InputDatepicker: FC<InputDatepickerProps> = ({
               minDate={minDate ? minDate : new Date('2000-01-01')}
               onChange={(date: Date | null) => field.onChange(date)}
               // TODO: add shouldDisableDate
-              shouldDisableDate={(date: Date) =>
+              shouldDisableDate={(date: Date): boolean =>
                 date !== null && !profile.isAdmin
                   ? shouldDisableDate(date, disabledDates)
                   : false
@@ -66,7 +75,8 @@ const InputDatepicker: FC<InputDatepickerProps> = ({
               renderInput={params => (
                 <TextField
                   helperText={
-                    isStartDateOccupied || isEndDateOccupied
+                    (!profile.isAdmin && isStartDateOccupied) ||
+                    (!profile.isAdmin && isEndDateOccupied)
                       ? 'Please select an available date'
                       : ''
                   }
