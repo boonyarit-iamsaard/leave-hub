@@ -1,23 +1,28 @@
 import { User } from '@firebase/auth';
 import { RosterType } from './roster.interface';
 
-export enum AuthActionTypes {
+export enum AuthActionType {
   Login,
   Logout,
   SetIsAuthenticationReady,
+  SetProfile,
 }
 
 export interface AuthAction {
-  type: AuthActionTypes;
-  payload: User | null;
+  type: AuthActionType;
+  payload?: {
+    profile?: Profile | null;
+    user?: User | null;
+  };
 }
 
 export interface AuthState {
   isAuthenticationReady: boolean;
+  profile: Profile | null;
   user: User | null;
 }
 
-export interface Credentials {
+export interface UserCredential {
   email: string;
   password: string;
 }

@@ -8,19 +8,19 @@ import { signInWithEmailAndPassword, AuthError, User } from 'firebase/auth';
 import useAuthContext from './useAuthContext';
 
 // interfaces
-import { AuthActionTypes, Credentials } from '../interfaces/auth.interface';
+import { AuthActionType, UserCredential } from '../interfaces/auth.interface';
 
 const useLogin = (): {
   error: string;
-  login: (credentials: Credentials) => Promise<User | undefined>;
+  login: (credentials: UserCredential) => Promise<User | undefined>;
   isPending: boolean;
 } => {
   const [error, setError] = useState<string>('');
   const [isPending, setIsPending] = useState<boolean>(false);
   const { dispatch } = useAuthContext();
 
-  const login = async (credentials: Credentials) => {
-    const { email, password } = credentials;
+  const login = async (userCredentioal: UserCredential) => {
+    const { email, password } = userCredentioal;
 
     setIsPending(true);
 
@@ -28,8 +28,10 @@ const useLogin = (): {
       const response = await signInWithEmailAndPassword(auth, email, password);
 
       dispatch({
-        type: AuthActionTypes.Login,
-        payload: response.user,
+        type: AuthActionType.Login,
+        payload: {
+          user: response.user,
+        },
       });
 
       setIsPending(false);

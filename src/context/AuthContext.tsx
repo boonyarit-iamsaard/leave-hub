@@ -8,18 +8,21 @@ import {
 } from 'react';
 
 // firebase
-import { auth } from '../firebase/config';
+import { auth, firestoreDatabase } from '../firebase/config';
 import { onAuthStateChanged } from '@firebase/auth';
+import { doc, onSnapshot } from '@firebase/firestore';
 
 // interfaces
 import {
   AuthAction,
-  AuthActionTypes,
+  AuthActionType,
   AuthState,
+  Profile,
 } from '../interfaces/auth.interface';
 
 const initialAuthState: AuthState = {
   isAuthenticationReady: false,
+  profile: null,
   user: null,
 };
 
@@ -36,36 +39,63 @@ export const authReducer = (
   action: AuthAction
 ): AuthState => {
   switch (action.type) {
-    case AuthActionTypes.SetIsAuthenticationReady:
-      return {
-        user: action.payload,
-        isAuthenticationReady: true,
-      };
-    case AuthActionTypes.Login:
+    case AuthActionType.SetIsAuthenticationReady:
       return {
         ...state,
-        user: action.payload,
+        isAuthenticationReady: true,
+        user: action.payload?.user || null,
       };
-    case AuthActionTypes.Logout:
-      return { ...state, user: null };
+    case AuthActionType.Login:
+      return {
+        ...state,
+        user: action.payload?.user || null,
+      };
+    case AuthActionType.Logout:
+      return {
+        ...state,
+        user: null,
+        profile: null,
+      };
+    case AuthActionType.SetProfile:
+      return {
+        ...state,
+        profile: action.payload?.profile || null,
+      };
     default:
       return state;
   }
 };
 
+let renderCount = 0;
 export const AuthContextProvider: FC<ReactNode> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
+    const unsubscribeAuth = onAuthStateChanged(auth, user => {
       dispatch({
-        type: AuthActionTypes.SetIsAuthenticationReady,
-        payload: user,
+        type: AuthActionType.SetIsAuthenticationReady,
+        payload: { user },
       });
-
-      unsubscribe();
     });
+    return () => unsubscribeAuth();
   }, []);
+
+  useEffect(() => {
+    if (state.user) {
+      const profileRef = doc(firestoreDatabase, 'users', state.user.uid);
+      const unsubscribeProfile = onSnapshot(profileRef, profileSnapshot => {
+        dispatch({
+          type: AuthActionType.SetProfile,
+          payload: { profile: profileSnapshot.data() as Profile },
+        });
+      });
+      return () => unsubscribeProfile();
+    }
+  }, [state.user]);
+
+  renderCount++;
+  console.log('AuthContext<state>: ', state);
+  console.log('renderCount: ', renderCount);
 
   return (
     <AuthContext.Provider value={{ state, dispatch }}>

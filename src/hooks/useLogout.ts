@@ -6,7 +6,7 @@ import { signOut } from 'firebase/auth';
 import useAuthContext from './useAuthContext';
 
 // interfaces
-import { AuthActionTypes } from '../interfaces/auth.interface';
+import { AuthActionType } from '../interfaces/auth.interface';
 
 const useLogout = (): { logout: () => Promise<void> } => {
   const { dispatch } = useAuthContext();
@@ -14,7 +14,9 @@ const useLogout = (): { logout: () => Promise<void> } => {
   const logout = async (): Promise<void> => {
     try {
       await signOut(auth);
-      dispatch({ type: AuthActionTypes.Logout, payload: null });
+      dispatch({
+        type: AuthActionType.Logout,
+      });
     } catch (error) {
       // TODO: handle error
       console.log(error);

@@ -27,7 +27,7 @@ import logo from '../assets/images/logo.png';
 import useLogin from '../hooks/useLogin';
 
 // interfaces
-import { Credentials } from '../interfaces/auth.interface';
+import { UserCredential } from '../interfaces/auth.interface';
 import { ResetPasswordDialog } from '../components/Common';
 
 const schema = yup
@@ -57,7 +57,7 @@ const LoginPage: FC = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<Credentials>({
+  } = useForm<UserCredential>({
     defaultValues: {
       email: '',
       password: '',
@@ -77,7 +77,7 @@ const LoginPage: FC = () => {
     event.preventDefault();
   };
 
-  const handleLogin: SubmitHandler<Credentials> = async data => {
+  const handleLogin: SubmitHandler<UserCredential> = async data => {
     const user = await login(data);
 
     if (!user) return;
