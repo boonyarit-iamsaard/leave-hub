@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { differenceInDays, format } from 'date-fns';
 
 // mui
 import {
@@ -18,11 +19,10 @@ import useShiftList from '../../hooks/useShiftList';
 
 // interfaces
 import { Shift } from '../../interfaces/roster.interface';
-import { format } from 'date-fns';
 
-interface ProfileShiftListProps {
+type ProfileShiftListProps = {
   selectedProfile: string | null;
-}
+};
 
 const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
   const { shiftList } = useShiftList();
@@ -38,11 +38,13 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
 
   const rows: GridRowsProp = filteredShiftList.map(shift => {
     const { id, startDate, endDate, priority, status, type } = shift;
+    const days = differenceInDays(endDate, startDate) + 1;
 
     return {
       id,
       startDate,
       endDate,
+      days,
       priority,
       status,
       type,
@@ -53,6 +55,7 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
     {
       field: 'startDate',
       headerName: 'From',
+      minWidth: 120,
       flex: 1,
       valueFormatter: (params: GridValueFormatterParams) =>
         params.value && (params.value as Date)
@@ -62,6 +65,7 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
     {
       field: 'endDate',
       headerName: 'To',
+      minWidth: 120,
       flex: 1,
       valueFormatter: (params: GridValueFormatterParams) =>
         params.value && (params.value as Date)
@@ -69,18 +73,27 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
           : 'N/A',
     },
     {
+      field: 'days',
+      headerName: 'Days',
+      minWidth: 100,
+      flex: 1,
+    },
+    {
       field: 'type',
       headerName: 'Type',
+      minWidth: 100,
       flex: 1,
     },
     {
       field: 'priority',
       headerName: 'Priority',
+      minWidth: 100,
       flex: 1,
     },
     {
       field: 'status',
       headerName: 'Status',
+      minWidth: 100,
       flex: 1,
     },
   ];
@@ -97,7 +110,7 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
   }, [shiftList, selectedProfile]);
 
   return selectedProfile ? (
-    <ProfileShiftListContainer className="profile-shifter-list__container">
+    <ProfileShiftListContainer className="profile-shift-list__container">
       <div style={{ flexGrow: 1 }}>
         <Card className="shadow">
           <DataGrid
