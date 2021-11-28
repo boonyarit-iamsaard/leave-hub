@@ -12,20 +12,20 @@ import LayoutSidebar from './LayoutSidebar';
 import useAuthContext from '../../hooks/useAuthContext';
 
 // interfaces
-export interface LayoutProps {
+export type LayoutProps = {
   drawerWidth: number;
   drawerOpen?: boolean;
   handleDrawerToggle: () => void;
-}
+};
 
 const Layout: FC<ReactNode> = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const {
-    state: { user },
-  } = useAuthContext();
-
-  const theme = useTheme();
   const drawerWidth = 240;
+  const theme = useTheme();
+  const {
+    state: { user, profile },
+  } = useAuthContext();
+  const isAuthenticated = !!user && !!profile;
 
   const handleDrawerToggle = (): void => {
     setDrawerOpen(!drawerOpen);
@@ -37,25 +37,20 @@ const Layout: FC<ReactNode> = ({ children }) => {
       sx={{ display: 'flex', flexShrink: 0, minHeight: '100%' }}
     >
       <CssBaseline />
-
-      {/* Navbar */}
-      {user && (
+      {isAuthenticated ? (
         <LayoutNavbar
           drawerWidth={drawerWidth}
           drawerOpen={drawerOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
-      )}
-
-      {user && (
+      ) : null}
+      {isAuthenticated ? (
         <LayoutSidebar
           drawerWidth={drawerWidth}
           drawerOpen={drawerOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
-      )}
-
-      {/* Main content */}
+      ) : null}
       <Box
         className="layout-content"
         component="main"
@@ -70,7 +65,6 @@ const Layout: FC<ReactNode> = ({ children }) => {
         }}
       >
         <Toolbar />
-
         {children}
       </Box>
     </Box>

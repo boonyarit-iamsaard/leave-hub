@@ -56,6 +56,7 @@ const LoginPage: FC = () => {
   const {
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm<UserCredential>({
     defaultValues: {
@@ -81,6 +82,11 @@ const LoginPage: FC = () => {
     const user = await login(data);
 
     if (!user) return;
+
+    reset({
+      email: '',
+      password: '',
+    });
 
     history.replace(from);
   };
