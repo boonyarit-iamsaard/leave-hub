@@ -8,7 +8,7 @@ import { Box } from '@mui/system';
 import LayoutSidebarList from './LayoutSidebarList';
 
 // types
-import { LayoutProps } from './Layout';
+import { LayoutProps } from '../Layout';
 
 const LayoutSidebar: FC<LayoutProps> = ({
   drawerWidth,

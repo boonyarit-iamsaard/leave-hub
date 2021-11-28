@@ -19,18 +19,17 @@ import {
 import { Box } from '@mui/system';
 
 // components
-import LayoutTitle from './LayoutTitle';
+import LayoutBrand from './LayoutBrand';
 
 // hooks
-import useProfile from '../../hooks/useProfile';
+import useProfile from '../../../hooks/useProfile';
 
-// interfaces
-interface ListItemLinkProps {
+type ListItemLinkProps = {
   icon?: ReactElement;
   primary: string;
   to: string;
   onClick: () => void;
-}
+};
 
 const ListItemLink: FC<ListItemLinkProps> = ({
   icon,
@@ -50,7 +49,7 @@ const ListItemLink: FC<ListItemLinkProps> = ({
   );
 
   return (
-    <li>
+    <li className="layout-sidebar__list">
       <ListItem button component={renderLink} onClick={onClick}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} />
@@ -80,7 +79,7 @@ const LayoutSidebarList: FC<{ handleDrawerToggle: () => void }> = ({
   return (
     <div className="layout-sidebar_list">
       <Toolbar>
-        <LayoutTitle />
+        <LayoutBrand />
       </Toolbar>
 
       <Box sx={{ px: 1, py: 2 }}>

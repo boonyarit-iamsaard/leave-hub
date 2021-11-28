@@ -5,8 +5,7 @@ import { Box } from '@mui/system';
 import { CssBaseline, Toolbar, useTheme } from '@mui/material';
 
 // components
-import LayoutNavbar from './LayoutNavbar';
-import LayoutSidebar from './LayoutSidebar';
+import { LayoutNavbar, LayoutSidebar } from './patials';
 
 // context
 import useAuthContext from '../../hooks/useAuthContext';

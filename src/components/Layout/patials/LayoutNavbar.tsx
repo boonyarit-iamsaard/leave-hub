@@ -13,15 +13,15 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 
-// interfaces
-import { LayoutProps } from './Layout';
+// types
+import { LayoutProps } from '../Layout';
 
 // components
-import LayoutTitle from './LayoutTitle';
+import LayoutBrand from './LayoutBrand';
 
 // custom hooks
-import useLogout from '../../hooks/useLogout';
-import useProfile from '../../hooks/useProfile';
+import useLogout from '../../../hooks/useLogout';
+import useProfile from '../../../hooks/useProfile';
 
 const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
   const { logout } = useLogout();
@@ -58,7 +58,7 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
             <MenuIcon />
           </IconButton>
 
-          {!matches && <LayoutTitle />}
+          {!matches && <LayoutBrand />}
         </Box>
 
         {profile && (
