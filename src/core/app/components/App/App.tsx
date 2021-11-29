@@ -7,14 +7,14 @@ import { Box } from '@mui/system';
 import { LocalizationProvider } from '@mui/lab';
 
 // components
-import { Layout } from './components/Layout';
+import { AppRoute } from './patials';
+import { Layout } from '../Layout';
 
 // context
-import useAuthContext from './hooks/useAuthContext';
-import AppRoute from './AppRoute';
+import useAuthContext from '../../../../hooks/useAuthContext';
 
 // configs
-import routes from './routes';
+import routes from '../../routes';
 
 const App: FC = () => {
   const {

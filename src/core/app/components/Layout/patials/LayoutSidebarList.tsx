@@ -14,7 +14,7 @@ import LayoutSidebarListItemLink, {
 } from './LayoutSidebarListItemLink';
 
 // hooks
-import useProfile from '../../../hooks/useProfile';
+import useProfile from '../../../../../hooks/useProfile';
 
 const LayoutSidebarList: FC<{ handleDrawerToggle: () => void }> = ({
   handleDrawerToggle,

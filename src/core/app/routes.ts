@@ -1,9 +1,9 @@
 import { FC } from 'react';
 
-import AdminPage from './pages/AdminPage';
-import LoginPage from './pages/LoginPage';
-import ProfilePage from './pages/ProfilePage';
-import RosterPage from './pages/RosterPage';
+import AdminPage from '../../pages/AdminPage';
+import LoginPage from '../../pages/LoginPage';
+import ProfilePage from '../../pages/ProfilePage';
+import RosterPage from '../../pages/RosterPage';
 
 type AppRoute = {
   path: string;

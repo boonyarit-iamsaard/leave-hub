@@ -1,6 +1,6 @@
 import { Dispatch, useContext } from 'react';
 
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../core/auth';
 
 // interfaces
 import { AuthAction, AuthState } from '../interfaces/auth.interface';

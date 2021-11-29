@@ -8,7 +8,7 @@ import { CssBaseline, Toolbar, useTheme } from '@mui/material';
 import { LayoutNavbar, LayoutSidebar } from './patials';
 
 // context
-import useAuthContext from '../../hooks/useAuthContext';
+import useAuthContext from '../../../../hooks/useAuthContext';
 
 // interfaces
 export type LayoutProps = {

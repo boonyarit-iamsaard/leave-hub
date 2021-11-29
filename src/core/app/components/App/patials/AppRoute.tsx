@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Redirect, Route } from 'react-router';
 
-import useAuthContext from './hooks/useAuthContext';
+import useAuthContext from '../../../../../hooks/useAuthContext';
 
 type AppRouteProps = {
   component: FC;

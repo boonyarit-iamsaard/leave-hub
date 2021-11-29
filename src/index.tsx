@@ -3,13 +3,12 @@ import ReactDOM from 'react-dom';
 
 import { CssBaseline, ThemeProvider } from '@mui/material';
 
-import AuthContextProvider from './context/AuthContext';
-
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { App } from './core/app';
+import { AuthContextProvider } from './core/auth';
 
-import { theme } from './theme';
-import './index.css';
+import { theme } from './styles/theme';
+import './styles/index.css';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -17,7 +16,6 @@ ReactDOM.render(
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-
         <App />
       </ThemeProvider>
     </AuthContextProvider>
