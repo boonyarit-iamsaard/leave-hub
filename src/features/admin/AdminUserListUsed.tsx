@@ -23,7 +23,10 @@ const AdminUserListUsed: FC<AdminUserListUsedProps> = ({
       <Typography sx={{ mr: 1 }} variant="body1">
         {used}
       </Typography>
-      <Typography color="grey.400" variant="caption">
+      <Typography
+        color={Number(percentage) >= 50 ? 'grey.400' : 'error'}
+        variant="caption"
+      >
         ({percentage} %)
       </Typography>
     </Box>

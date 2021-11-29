@@ -33,9 +33,6 @@ const App: FC = () => {
                 <Route exact path="/">
                   {!user ? <Redirect to="/login" /> : <ProfilePage />}
                 </Route>
-                <Route path="/roster">
-                  {!user ? <Redirect to="/login" /> : <RosterPage />}
-                </Route>
                 <Route path="/admin">
                   {!user && <Redirect to="/login" />}
                   {user && profile.isAdmin && <Admin />}
@@ -43,6 +40,13 @@ const App: FC = () => {
                 </Route>
                 <Route path="/login">
                   {user ? <Redirect exact to="/" /> : <LoginPage />}
+                </Route>
+                <Route path="/profile/:uid">
+                  {!user ? <Redirect to="/login" /> : <ProfilePage />}
+                  {user && !profile.isAdmin && <Redirect exact to="/" />}
+                </Route>
+                <Route path="/roster">
+                  {!user ? <Redirect to="/login" /> : <RosterPage />}
                 </Route>
               </Switch>
             </Layout>

@@ -1,8 +1,10 @@
 import { FC } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 // mui
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import PersonIcon from '@mui/icons-material/Person';
 import { GridRenderCellParams } from '@mui/x-data-grid';
 import { IconButton } from '@mui/material';
 
@@ -20,6 +22,14 @@ const AdminUserListOptions: FC<AdminUserListOptionsProps> = ({
 }) => {
   return (
     <div>
+      <IconButton
+        component={RouterLink}
+        to={`/profile/${params.value.uid}`}
+        target="_blank"
+        aria-label="edit"
+      >
+        <PersonIcon />
+      </IconButton>
       <IconButton
         onClick={() => handleEditDialogOpen(params.value)}
         aria-label="edit"

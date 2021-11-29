@@ -1,4 +1,5 @@
-import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 // mui
 import { Box, Card, Divider, Typography } from '@mui/material';
@@ -8,25 +9,31 @@ import useProfile from '../hooks/useProfile';
 import useProfileSummary from '../hooks/useProfileSummary';
 
 // components
-import { ProfileShiftList, ProfileUserList } from '../components/Profile';
+import { ProfileShiftList } from '../components/Profile';
 import { ProfilePageSummaryContainer } from './ProfilePage.style';
+import useUserList from '../hooks/useUserList';
+
+import { Profile } from '../interfaces/auth.interface';
+
+type ProfilePageParams = {
+  uid: string;
+};
 
 const ProfilePage: FC = () => {
-  const [selectedProfile, setSelectedProfile] = useState<string>('');
+  const [selectedProfile, setSelectedProfile] = useState<Profile>();
+  const { uid } = useParams<ProfilePageParams>();
   const { profile } = useProfile();
   const { profileSummary, prioritySummary } = useProfileSummary(
-    profile.isAdmin ? selectedProfile : profile.uid
+    uid || profile.uid
   );
-
-  const handleSelectedProfileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSelectedProfile(e.target.value);
-  };
+  const { userList } = useUserList();
 
   useEffect(() => {
-    if (profile.isAdmin) {
-      setSelectedProfile(profile.uid);
-    }
-  }, [profile]);
+    if (uid) {
+      const selectedProfile = userList.find(user => user.uid === uid);
+      setSelectedProfile(selectedProfile);
+    } else setSelectedProfile(profile);
+  }, [uid, profile, userList]);
 
   return profile ? (
     <div>
@@ -43,20 +50,16 @@ const ProfilePage: FC = () => {
       </Box>
       <ProfilePageSummaryContainer>
         <Card className="shadow" sx={{ mb: 2, px: 4, py: 2 }}>
-          {profile && profile.isAdmin ? (
-            <ProfileUserList
-              handleSelectedProfileChange={handleSelectedProfileChange}
-              selectedProfile={selectedProfile}
-            />
-          ) : (
-            <Box sx={{ textAlign: 'center', mb: 2 }}>
+          <Box sx={{ textAlign: 'center', mb: 2 }}>
+            {selectedProfile ? (
               <Typography variant="h6">
-                {profile
-                  ? `${profile.firstName} ${profile.lastName}`
-                  : 'Loading...'}
+                {`${selectedProfile?.firstName} ${selectedProfile?.lastName}`}
               </Typography>
-            </Box>
-          )}
+            ) : (
+              <Typography variant="caption">Loading...</Typography>
+            )}
+          </Box>
+          {/*)}*/}
           <Divider sx={{ mb: 2 }} />
           <Box
             sx={{
@@ -121,9 +124,7 @@ const ProfilePage: FC = () => {
           </Box>
         </Card>
       </ProfilePageSummaryContainer>
-      <ProfileShiftList
-        selectedProfile={profile.isAdmin ? selectedProfile : profile.uid}
-      />
+      <ProfileShiftList selectedProfile={uid ? uid : profile.uid} />
     </div>
   ) : null;
 };

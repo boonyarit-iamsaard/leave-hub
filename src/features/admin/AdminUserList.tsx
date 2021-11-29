@@ -96,7 +96,7 @@ const AdminUserList: FC<AdminUserListProps> = ({
     {
       field: 'carryover',
       headerName: 'Carryover',
-      minWidth: 100,
+      minWidth: 80,
       flex: 1,
     },
     {
