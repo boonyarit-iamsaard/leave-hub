@@ -18,6 +18,7 @@ import { LayoutProps } from './Layout';
 
 // components
 import LayoutBrand from './LayoutBrand';
+import LayoutNavbarNotification from './LayoutNavbarNotification';
 
 // custom hooks
 import useLogout from '../../hooks/useLogout';
@@ -30,8 +31,8 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('lg'));
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -69,6 +70,9 @@ const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
             >
               {profile.firstName} {profile.lastName}
             </Typography>
+
+            {profile.isAdmin && <LayoutNavbarNotification />}
+
             <Box>
               <Button
                 color="secondary"

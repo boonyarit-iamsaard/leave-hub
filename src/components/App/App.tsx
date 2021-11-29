@@ -43,7 +43,6 @@ const App: FC = () => {
                 </Route>
                 <Route path="/profile/:uid">
                   {!user ? <Redirect to="/login" /> : <ProfilePage />}
-                  {user && !profile.isAdmin && <Redirect exact to="/" />}
                 </Route>
                 <Route path="/roster">
                   {!user ? <Redirect to="/login" /> : <RosterPage />}
