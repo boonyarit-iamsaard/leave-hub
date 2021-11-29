@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // firebase
 import { auth } from '../firebase/config';
-import { signInWithEmailAndPassword, AuthError, User } from 'firebase/auth';
+import { signInWithEmailAndPassword, AuthError } from 'firebase/auth';
 
 // context
 import useAuthContext from './useAuthContext';
@@ -12,16 +12,17 @@ import { AuthActionType, UserCredential } from '../interfaces/auth.interface';
 
 const useLogin = (): {
   error: string;
-  login: (credentials: UserCredential) => Promise<User | undefined>;
+  login: (credentials: UserCredential) => Promise<void>;
   isPending: boolean;
 } => {
   const [error, setError] = useState<string>('');
+  const [isCancelled, setIsCancelled] = useState(false);
   const [isPending, setIsPending] = useState<boolean>(false);
   const { dispatch } = useAuthContext();
 
-  const login = async (userCredentioal: UserCredential) => {
-    const { email, password } = userCredentioal;
-
+  const login = async (userCredential: UserCredential) => {
+    const { email, password } = userCredential;
+    setError('');
     setIsPending(true);
 
     try {
@@ -29,21 +30,27 @@ const useLogin = (): {
 
       dispatch({
         type: AuthActionType.Login,
-        payload: {
-          user: response.user,
-        },
+        payload: response.user,
       });
 
-      setIsPending(false);
-      return response.user;
+      if (!isCancelled) {
+        setIsPending(false);
+        setError('');
+      }
     } catch (error) {
-      (error as AuthError)
-        ? setError((error as AuthError).message)
-        : setError('An unknown error occurred.');
+      if (!isCancelled) {
+        (error as AuthError) && !isCancelled
+          ? setError((error as AuthError).message)
+          : setError('An unknown error occurred.');
 
-      setIsPending(false);
+        setIsPending(false);
+      }
     }
   };
+
+  useEffect(() => {
+    return () => setIsCancelled(true);
+  }, []);
 
   return { login, error, isPending };
 };

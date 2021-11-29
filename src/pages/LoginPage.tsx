@@ -1,7 +1,5 @@
-import { FC, useState, MouseEvent, useEffect, useRef } from 'react';
+import { FC, useState, MouseEvent } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -28,7 +26,12 @@ import useLogin from '../hooks/useLogin';
 
 // interfaces
 import { UserCredential } from '../interfaces/auth.interface';
+
 import { ResetPasswordDialog } from '../components/Common';
+
+interface LoginFormData extends UserCredential {
+  showPassword: boolean;
+}
 
 const schema = yup
   .object({
@@ -39,72 +42,49 @@ const schema = yup
     password: yup.string().required('*Password is required.'),
   })
   .required();
+const defaultValues: LoginFormData = {
+  email: '',
+  password: '',
+  showPassword: false,
+};
 
 const LoginPage: FC = () => {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [resetPasswordDialog, setResetPasswordDialog] = useState({
-    open: false,
-    onClose: () =>
-      setResetPasswordDialog(prevState => ({ ...prevState, open: false })),
-  });
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const { error, login, isPending } = useLogin();
-  const history = useHistory();
-  const location = useLocation();
-  // TODO: fix type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { from } = (location.state as any) || { from: { pathname: '/' } };
   const {
     handleSubmit,
     control,
-    reset,
+    setValue,
+    watch,
     formState: { errors },
-  } = useForm<UserCredential>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+  } = useForm<LoginFormData>({
+    defaultValues: { ...defaultValues },
     resolver: yupResolver(schema),
+    shouldUnregister: true,
   });
+  const { showPassword } = watch();
 
-  const handleResetPasswordDialogOpen = (): void => {
-    setResetPasswordDialog(prevState => ({ ...prevState, open: true }));
-  };
+  const handleToggleResetPasswordDialog = () =>
+    setResetPasswordDialogOpen(!resetPasswordDialogOpen);
 
   const handleClickShowPassword = () => {
-    setIsPasswordVisible(!isPasswordVisible);
+    setValue('showPassword', !showPassword);
   };
 
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
-  const handleLogin: SubmitHandler<UserCredential> = async data => {
-    const user = await login(data);
-
-    if (!user) return;
-
-    reset({
-      email: '',
-      password: '',
-    });
-
-    history.replace(from);
+  const handleLogin: SubmitHandler<LoginFormData> = async data => {
+    const { email, password } = data;
+    await login({ email, password });
   };
-
-  const mounted = useRef(false);
-  useEffect(() => {
-    mounted.current = true;
-
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
 
   return (
     <div>
       <ResetPasswordDialog
-        open={resetPasswordDialog.open}
-        onClose={resetPasswordDialog.onClose}
+        open={resetPasswordDialogOpen}
+        onClose={handleToggleResetPasswordDialog}
       />
 
       <Card className="shadow" sx={{ p: 2, maxWidth: 400, mx: 'auto' }}>
@@ -174,7 +154,7 @@ const LoginPage: FC = () => {
                     sx={{
                       backgroundColor: 'grey.100',
                     }}
-                    type={isPasswordVisible ? 'text' : 'password'}
+                    type={showPassword ? 'text' : 'password'}
                     {...field}
                     endAdornment={
                       <InputAdornment position="end">
@@ -184,11 +164,7 @@ const LoginPage: FC = () => {
                           onMouseDown={handleMouseDownPassword}
                           edge="end"
                         >
-                          {isPasswordVisible ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility />
-                          )}
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
                     }
@@ -219,7 +195,7 @@ const LoginPage: FC = () => {
 
           <Button
             fullWidth
-            onClick={handleResetPasswordDialogOpen}
+            onClick={handleToggleResetPasswordDialog}
             sx={{ textTransform: 'unset' }}
             variant="text"
           >
