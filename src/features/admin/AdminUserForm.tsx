@@ -12,7 +12,11 @@ import {
 } from '@mui/material';
 
 // components
-import { InputCheckbox, InputSelect, InputTextField } from '../Input';
+import {
+  InputCheckbox,
+  InputSelect,
+  InputTextField,
+} from '../../components/Input';
 
 // hooks
 import useUserList from '../../hooks/useUserList';

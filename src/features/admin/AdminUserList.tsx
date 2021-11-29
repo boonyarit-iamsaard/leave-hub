@@ -17,10 +17,10 @@ import { RosterType } from '../../interfaces/roster.interface';
 
 // components
 import AdminUserListOptions from './AdminUserListOptions';
+import AdminUserListUsed from './AdminUserListUsed';
 
 // hooks
 import useAdminSummary from '../../hooks/useAdminSummary';
-import AdminUserListUsed from './AdminUserListUsed';
 
 interface AdminUserListProps {
   handleEditDialogOpen: (user: Profile) => void;
@@ -31,7 +31,6 @@ const AdminUserList: FC<AdminUserListProps> = ({
   handleEditDialogOpen,
   rosterType = RosterType.Mechanic,
 }) => {
-  const { adminSummary } = useAdminSummary(rosterType);
   const [pageSize, setPageSize] = useState(10);
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
@@ -39,6 +38,7 @@ const AdminUserList: FC<AdminUserListProps> = ({
       sort: 'asc' as GridSortDirection,
     },
   ]);
+  const { adminSummary } = useAdminSummary(rosterType);
 
   const rows: GridRowsProp = adminSummary.map(summary => ({
     id: summary.user.uid,

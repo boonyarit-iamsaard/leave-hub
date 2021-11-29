@@ -2,25 +2,19 @@ import { FC, useState } from 'react';
 
 // mui
 import { Button, Typography } from '@mui/material';
-import { styled } from '@mui/system';
-
-// components
-import { AdminUserForm, AdminUserList } from '../components/Admin';
 
 // interfaces
-import { Profile } from '../interfaces/auth.interface';
-import { RosterType } from '../interfaces/roster.interface';
+import { Profile } from '../../interfaces/auth.interface';
+import { RosterType } from '../../interfaces/roster.interface';
+
+// components
+import AdminUserList from './AdminUserList';
+import AdminUserForm from './AdminUserForm';
 
 // styled-components
-import { AdminPageContainer } from './AdminPage.style';
+import { AdminContainer, AdminHeader } from './Admin.style';
 
-const AdminPageHeader = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
-
-const AdminPage: FC = () => {
+const Admin: FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [rosterType, setRosterType] = useState<RosterType>(RosterType.Engineer);
@@ -41,8 +35,8 @@ const AdminPage: FC = () => {
   };
 
   return (
-    <AdminPageContainer>
-      <AdminPageHeader style={{ marginBottom: 16 }}>
+    <AdminContainer>
+      <AdminHeader>
         <Typography variant="h6">Admin</Typography>
         <div>
           <Button
@@ -72,7 +66,7 @@ const AdminPage: FC = () => {
             Add User
           </Button>
         </div>
-      </AdminPageHeader>
+      </AdminHeader>
       {rosterType === RosterType.Engineer && (
         <AdminUserList
           handleEditDialogOpen={handleEditDialogOpen}
@@ -90,8 +84,8 @@ const AdminPage: FC = () => {
         handleDialogOpen={handleDialogOpen}
         user={editMode ? user : undefined}
       />
-    </AdminPageContainer>
+    </AdminContainer>
   );
 };
 
-export default AdminPage;
+export default Admin;
