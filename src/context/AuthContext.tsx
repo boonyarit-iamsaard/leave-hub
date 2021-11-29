@@ -57,7 +57,6 @@ export const authReducer = (
   }
 };
 
-let renderCount = 0;
 export const AuthContextProvider: FC<ReactNode> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
 
@@ -70,10 +69,6 @@ export const AuthContextProvider: FC<ReactNode> = ({ children }) => {
     });
     return () => unsubscribeAuth();
   }, []);
-
-  renderCount++;
-  console.log('AuthContext<state>: ', state);
-  console.log('renderCount: ', renderCount);
 
   return (
     <AuthContext.Provider value={{ state, dispatch }}>
