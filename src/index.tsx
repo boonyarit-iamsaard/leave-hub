@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 
 import reportWebVitals from './reportWebVitals';
-import { App } from './core/app';
+import { App } from './components/App';
 import { AuthContextProvider } from './core/auth';
 
 import { theme } from './styles/theme';

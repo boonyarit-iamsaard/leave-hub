@@ -14,14 +14,14 @@ import {
 import { Box } from '@mui/system';
 
 // types
-import { LayoutProps } from '../Layout';
+import { LayoutProps } from './Layout';
 
 // components
 import LayoutBrand from './LayoutBrand';
 
 // custom hooks
-import useLogout from '../../../../../hooks/useLogout';
-import useProfile from '../../../../../hooks/useProfile';
+import useLogout from '../../hooks/useLogout';
+import useProfile from '../../hooks/useProfile';
 
 const LayoutNavbar: FC<LayoutProps> = ({ drawerWidth, handleDrawerToggle }) => {
   const { logout } = useLogout();

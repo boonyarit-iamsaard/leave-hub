@@ -5,11 +5,12 @@ import { Box } from '@mui/system';
 import { CssBaseline, Toolbar, useTheme } from '@mui/material';
 
 // components
-import { LayoutNavbar, LayoutSidebar } from './patials';
 
 // context
-import useAuthContext from '../../../../hooks/useAuthContext';
-import useProfile from '../../../../hooks/useProfile';
+import useAuthContext from '../../hooks/useAuthContext';
+import useProfile from '../../hooks/useProfile';
+import LayoutNavbar from './LayoutNavbar';
+import LayoutSidebar from './LayoutSidebar';
 
 // interfaces
 export type LayoutProps = {
