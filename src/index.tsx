@@ -5,7 +5,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 
 import reportWebVitals from './reportWebVitals';
 import { App } from './components/App';
-import { AuthContextProvider } from './core/auth';
+import { AuthContextProvider } from './context';
 
 import { theme } from './styles/theme';
 import './styles/index.css';

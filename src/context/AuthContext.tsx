@@ -8,7 +8,7 @@ import {
 } from 'react';
 
 // firebase
-import { auth } from '../../../firebase/config';
+import { auth } from '../firebase/config';
 import { onAuthStateChanged } from '@firebase/auth';
 
 // interfaces
@@ -16,7 +16,7 @@ import {
   AuthAction,
   AuthActionType,
   AuthState,
-} from '../../../interfaces/auth.interface';
+} from '../interfaces/auth.interface';
 
 const initialAuthState: AuthState = {
   isAuthenticationReady: false,

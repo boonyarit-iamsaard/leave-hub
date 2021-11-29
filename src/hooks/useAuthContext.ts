@@ -1,9 +1,10 @@
 import { Dispatch, useContext } from 'react';
 
-import { AuthContext } from '../core/auth';
-
 // interfaces
 import { AuthAction, AuthState } from '../interfaces/auth.interface';
+
+// context
+import { AuthContext } from '../context';
 
 const useAuthContext = (): {
   state: AuthState;
