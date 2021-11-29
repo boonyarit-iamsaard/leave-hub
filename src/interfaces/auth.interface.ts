@@ -5,20 +5,15 @@ export enum AuthActionType {
   Login,
   Logout,
   SetIsAuthenticationReady,
-  SetProfile,
 }
 
 export interface AuthAction {
   type: AuthActionType;
-  payload?: {
-    profile?: Profile | null;
-    user?: User | null;
-  };
+  payload?: User | null;
 }
 
 export interface AuthState {
   isAuthenticationReady: boolean;
-  profile: Profile | null;
   user: User | null;
 }
 

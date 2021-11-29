@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { Redirect, Route } from 'react-router';
 
 import useAuthContext from '../../../../../hooks/useAuthContext';
+import useProfile from '../../../../../hooks/useProfile';
 
 type AppRouteProps = {
   component: FC;
@@ -15,8 +16,9 @@ const AppRoute: FC<AppRouteProps> = ({
   path,
 }) => {
   const {
-    state: { profile, user },
+    state: { user },
   } = useAuthContext();
+  const { profile } = useProfile();
 
   const loginRoute = path === '/login';
   const adminRoute = path === '/admin';

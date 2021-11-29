@@ -9,6 +9,7 @@ import { LayoutNavbar, LayoutSidebar } from './patials';
 
 // context
 import useAuthContext from '../../../../hooks/useAuthContext';
+import useProfile from '../../../../hooks/useProfile';
 
 // interfaces
 export type LayoutProps = {
@@ -22,8 +23,9 @@ const Layout: FC<ReactNode> = ({ children }) => {
   const drawerWidth = 240;
   const theme = useTheme();
   const {
-    state: { user, profile },
+    state: { user },
   } = useAuthContext();
+  const { profile } = useProfile();
   const isAuthenticated = !!user && !!profile;
 
   const handleDrawerToggle = (): void => {
