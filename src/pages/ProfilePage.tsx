@@ -59,7 +59,6 @@ const ProfilePage: FC = () => {
               <Typography variant="caption">Loading...</Typography>
             )}
           </Box>
-          {/*)}*/}
           <Divider sx={{ mb: 2 }} />
           <Box
             sx={{
