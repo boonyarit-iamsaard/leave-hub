@@ -79,7 +79,6 @@ const ShiftForm: FC<ShiftFormProps> = ({
     defaultValues: {
       ...defaultFormValues(selectedProfile, year, month),
     },
-    shouldUnregister: true,
   });
   const { handleSubmit, watch, setValue } = methods;
   const { createdAt, endDate, startDate, type } = watch();
