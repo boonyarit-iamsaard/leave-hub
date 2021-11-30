@@ -5,6 +5,7 @@ import { differenceInDays, format } from 'date-fns';
 import {
   DataGrid,
   GridColDef,
+  GridRenderCellParams,
   GridRowsProp,
   GridSortModel,
   GridValueFormatterParams,
@@ -18,10 +19,16 @@ import { ProfileShiftListContainer } from './ProfileShiftList.style';
 import useShiftList from '../../hooks/useShiftList';
 
 // interfaces
+import { Profile } from '../../interfaces/auth.interface';
 import { Shift } from '../../interfaces/roster.interface';
+import { ShiftForm, ShiftListOptions } from '../Shift';
+import { ShiftFormMode } from '../Shift';
+
+// utils
+import { transformTimestamp } from '../../utils/transform-timestamp';
 
 type ProfileShiftListProps = {
-  selectedProfile: string | null;
+  selectedProfile: Profile;
 };
 
 const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
@@ -29,6 +36,12 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
   const [filteredShiftList, setFilteredShiftList] = useState<Shift[]>(
     [] as Shift[]
   );
+  const [shiftForm, setShiftForm] = useState({
+    mode: ShiftFormMode.EDIT,
+    open: false,
+    selectedProfile: {} as Profile,
+    shift: {} as Shift,
+  });
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: 'startDate',
@@ -36,8 +49,26 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
     },
   ]);
 
+  const handleShiftFormOpen = (shift?: Shift) => {
+    setShiftForm({
+      ...shiftForm,
+      open: true,
+      selectedProfile,
+      shift: shift || ({} as Shift),
+    });
+  };
+
+  const handleShiftFormClose = () => {
+    setShiftForm({
+      ...shiftForm,
+      open: false,
+      selectedProfile: {} as Profile,
+      shift: {} as Shift,
+    });
+  };
+
   const rows: GridRowsProp = filteredShiftList.map(shift => {
-    const { id, startDate, endDate, priority, status, type } = shift;
+    const { id, createdAt, startDate, endDate, priority, status, type } = shift;
     const days = differenceInDays(endDate, startDate) + 1;
 
     return {
@@ -46,8 +77,10 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
       endDate,
       days,
       priority,
+      createdAt: transformTimestamp(createdAt as number),
       status,
       type,
+      options: shift,
     };
   });
 
@@ -91,10 +124,30 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
       flex: 1,
     },
     {
+      field: 'createdAt',
+      headerName: 'Created',
+      minWidth: 140,
+      flex: 1,
+    },
+    {
       field: 'status',
       headerName: 'Status',
       minWidth: 100,
       flex: 1,
+    },
+    {
+      field: 'options',
+      headerName: 'Options',
+      minWidth: 120,
+      flex: 1,
+      renderCell: (params: GridRenderCellParams<Shift>) => {
+        return (
+          <ShiftListOptions
+            params={params}
+            handleClickEdit={handleShiftFormOpen}
+          />
+        );
+      },
     },
   ];
 
@@ -102,7 +155,7 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
     let filteredShiftList: Shift[] = [];
     if (selectedProfile) {
       filteredShiftList = shiftList.filter(shift => {
-        return shift.uid === selectedProfile;
+        return shift.uid === selectedProfile.uid;
       });
     }
 
@@ -111,6 +164,7 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
 
   return selectedProfile ? (
     <ProfileShiftListContainer className="profile-shift-list__container">
+      <ShiftForm handleClose={handleShiftFormClose} {...shiftForm} />
       <div style={{ flexGrow: 1 }}>
         <Card className="shadow">
           <DataGrid

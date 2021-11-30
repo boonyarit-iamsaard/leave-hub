@@ -124,7 +124,9 @@ const ProfilePage: FC = () => {
           </Box>
         </Card>
       </ProfilePageSummaryContainer>
-      <ProfileShiftList selectedProfile={uid ? uid : profile.uid} />
+      <ProfileShiftList
+        selectedProfile={selectedProfile ? selectedProfile : profile}
+      />
     </div>
   ) : null;
 };
