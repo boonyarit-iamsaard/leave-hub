@@ -49,12 +49,12 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
     },
   ]);
 
-  const handleShiftFormOpen = (shift?: Shift) => {
+  const handleShiftFormOpen = (shift: Shift) => {
     setShiftForm({
       ...shiftForm,
       open: true,
       selectedProfile,
-      shift: shift || ({} as Shift),
+      shift: shift,
     });
   };
 
@@ -62,8 +62,6 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
     setShiftForm({
       ...shiftForm,
       open: false,
-      selectedProfile: {} as Profile,
-      shift: {} as Shift,
     });
   };
 

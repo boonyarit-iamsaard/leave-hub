@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import useShiftList from '../../hooks/useShiftList';
-import { Badge } from '@mui/material';
+import { Badge, IconButton } from '@mui/material';
 
 import { ShiftStatus } from '../../interfaces/roster.interface';
 
@@ -22,10 +23,14 @@ const LayoutNavbarNotification: FC = () => {
 
   return pendingShifts > 0 ? (
     <Badge badgeContent={pendingShifts} color="error" max={99} sx={{ mr: 4 }}>
-      <NotificationsIcon color="action" />
+      <IconButton component={RouterLink} to="/admin/pending" sx={{ p: 0 }}>
+        <NotificationsIcon color="action" />
+      </IconButton>
     </Badge>
   ) : (
-    <NotificationsIcon color="action" sx={{ mr: 2 }} />
+    <IconButton sx={{ mr: 2 }}>
+      <NotificationsIcon color="action" />
+    </IconButton>
   );
 };
 

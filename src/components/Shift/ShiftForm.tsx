@@ -176,10 +176,10 @@ const ShiftForm: FC<ShiftFormProps> = ({
       setShouldDisabled(true);
     }
     if (type === ShiftType.ANL) {
-      setValue('priority', ShiftPriority.ANL3);
+      setValue('priority', shift ? shift.priority : ShiftPriority.ANL3);
       setShouldDisabled(false);
     }
-  }, [type, setValue]);
+  }, [shift, type, setValue]);
 
   return (
     <Dialog
