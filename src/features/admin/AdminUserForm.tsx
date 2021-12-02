@@ -101,6 +101,7 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
   return (
     <Dialog
       className="admin-form"
+      onClose={handleCloseForm}
       sx={{
         color: '#fff',
         zIndex: theme => theme.zIndex.drawer + 1,

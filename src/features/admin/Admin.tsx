@@ -21,13 +21,15 @@ const Admin: FC = () => {
   const [user, setUser] = useState<Profile>({} as Profile);
 
   const handleDialogOpen = () => {
+    setUser({} as Profile);
+    setEditMode(false);
     setDialogOpen(!dialogOpen);
   };
 
   const handleEditDialogOpen = (user: Profile) => {
-    setEditMode(true);
     setUser(user);
-    handleDialogOpen();
+    setEditMode(true);
+    setDialogOpen(!dialogOpen);
   };
 
   const handleSwitchRosterType = (type: RosterType) => {
