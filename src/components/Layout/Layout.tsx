@@ -66,7 +66,7 @@ const Layout: FC<ReactNode> = ({ children }) => {
           },
         }}
       >
-        <Toolbar />
+        {isAuthenticated ? <Toolbar /> : null}
         {children}
       </Box>
     </Box>
