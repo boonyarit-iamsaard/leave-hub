@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { realtimeDatabase } from '../firebase/config';
 import { ref, onValue } from 'firebase/database';
 
-type Settings = {
+export type Settings = {
   phase: Phase;
   activeYear: number;
 };
 
-enum Phase {
+export enum Phase {
   A = 'A',
   B = 'B',
 }
@@ -22,9 +22,9 @@ const useSettings = (): {
   });
 
   useEffect(() => {
-    const settingsReff = ref(realtimeDatabase, 'settings');
+    const settingsRef = ref(realtimeDatabase, 'settings');
 
-    const settingsListener = onValue(settingsReff, snapshot => {
+    const settingsListener = onValue(settingsRef, snapshot => {
       setSettings({
         phase: snapshot.val().phase,
         activeYear: snapshot.val().activeYear,

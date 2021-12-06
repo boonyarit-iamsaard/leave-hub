@@ -10,7 +10,7 @@ import { LocalizationProvider } from '@mui/lab';
 import LoginPage from '../../pages/LoginPage';
 import ProfilePage from '../../pages/ProfilePage';
 import RosterPage from '../../pages/RosterPage';
-import { Admin, AdminShiftList } from '../../features/admin';
+import { Admin, AdminSettings, AdminShiftList } from '../../features/admin';
 import { Layout } from '../Layout';
 
 // hooks
@@ -41,6 +41,11 @@ const App: FC = () => {
                 <Route path="/admin/pending">
                   {!user && <Redirect to="/login" />}
                   {user && profile.isAdmin && <AdminShiftList />}
+                  {user && !profile.isAdmin && <Redirect exact to="/" />}
+                </Route>
+                <Route path="/admin/settings">
+                  {!user && <Redirect to="/login" />}
+                  {user && profile.isAdmin && <AdminSettings />}
                   {user && !profile.isAdmin && <Redirect exact to="/" />}
                 </Route>
                 <Route path="/login">
