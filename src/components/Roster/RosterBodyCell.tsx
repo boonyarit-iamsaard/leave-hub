@@ -10,7 +10,7 @@ import {
 } from '../../interfaces/roster.interface';
 
 import { RosterCell } from './Roster.style';
-import { Badge, useTheme } from '@mui/material';
+import { Badge, Tooltip, useTheme } from '@mui/material';
 
 import useProfile from '../../hooks/useProfile';
 
@@ -51,22 +51,24 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
   };
 
   return shift?.status === ShiftStatus.Pending ? (
-    <Badge color="warning" badgeContent="!">
-      <RosterCell
-        onClick={profile.isAdmin ? handlerClickCell : undefined}
-        style={{
-          cursor: shift && profile.isAdmin ? 'pointer' : 'default',
-          backgroundColor: shift ? shiftColor[shift.priority] : '#fff',
-          color:
-            shift?.priority === ShiftPriority.TYC ||
-            shift?.priority === ShiftPriority.ANL3
-              ? '#fff'
-              : theme.palette.text.primary,
-        }}
-      >
-        {shift ? shift.type : ''}
-      </RosterCell>
-    </Badge>
+    <Tooltip arrow title={shift.priority}>
+      <Badge color="warning" badgeContent="!">
+        <RosterCell
+          onClick={profile.isAdmin ? handlerClickCell : undefined}
+          style={{
+            cursor: shift && profile.isAdmin ? 'pointer' : 'default',
+            backgroundColor: shift ? shiftColor[shift.priority] : '#fff',
+            color:
+              shift?.priority === ShiftPriority.TYC ||
+              shift?.priority === ShiftPriority.ANL3
+                ? '#fff'
+                : theme.palette.text.primary,
+          }}
+        >
+          {shift ? shift.type : ''}
+        </RosterCell>
+      </Badge>
+    </Tooltip>
   ) : (
     <RosterCell
       onClick={profile.isAdmin ? handlerClickCell : undefined}
