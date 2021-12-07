@@ -34,11 +34,13 @@ import {
   userListOptions,
 } from './form-constants';
 
+import { ConfirmDialog } from '../Common';
+
 import useProfile from '../../hooks/useProfile';
 import useProfileSummary from '../../hooks/useProfileSummary';
+import useSettings, { Phase } from '../../hooks/useSettings';
 import useShiftList from '../../hooks/useShiftList';
 import useUserList from '../../hooks/useUserList';
-import { ConfirmDialog } from '../Common';
 
 export enum ShiftFormMode {
   CREATE = 'create',
@@ -72,6 +74,7 @@ const ShiftForm: FC<ShiftFormProps> = ({
   const [shouldDisabled, setShouldDisabled] = useState(false);
   const { profile } = useProfile();
   const { removeShiftDocument, setShiftDocument } = useShiftList();
+  const { settings } = useSettings();
   const { shiftsCount } = useProfileSummary(selectedProfile.uid);
   const { userList } = useUserList();
 
@@ -85,8 +88,8 @@ const ShiftForm: FC<ShiftFormProps> = ({
 
   const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
   const disabledShiftPriorities = () => {
-    const defaultDisabled: string[] = [ShiftType.X, ShiftType.ANL];
     const { priorities } = shiftsCount;
+    const defaultDisabled: string[] = [ShiftType.X];
     const isTYCAssigned = profile.tyc > 0;
     const isTYCUsed = priorities.TYC > 0;
     const isANL1Used = priorities.ANL1 > 0;
@@ -95,8 +98,8 @@ const ShiftForm: FC<ShiftFormProps> = ({
 
     if (profile.isAdmin) return [];
 
-    if (isANLType) {
-      let disabled = [...defaultDisabled, ShiftType.H];
+    if (isANLType && settings.phase !== Phase.B) {
+      let disabled = [...defaultDisabled, ShiftType.H, ShiftType.ANL];
       if (isANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
       if (isANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
       if (isTYCAssigned && isTYCUsed)
@@ -104,6 +107,18 @@ const ShiftForm: FC<ShiftFormProps> = ({
       if (!isTYCAssigned) disabled = [...disabled, ShiftPriority.TYC];
 
       return disabled;
+    }
+
+    if (isANLType && settings.phase === Phase.B) {
+      const disabled = [...defaultDisabled, ShiftType.H];
+      return [
+        ...disabled,
+        ShiftType.H,
+        ShiftPriority.ANL1,
+        ShiftPriority.ANL2,
+        ShiftPriority.ANL3,
+        ShiftPriority.TYC,
+      ];
     }
 
     return defaultDisabled;
@@ -175,10 +190,12 @@ const ShiftForm: FC<ShiftFormProps> = ({
       setShouldDisabled(true);
     }
     if (type === ShiftType.ANL) {
-      setValue('priority', shift ? shift.priority : ShiftPriority.ANL3);
+      const predefinedPriority =
+        settings.phase === Phase.B ? ShiftType.ANL : ShiftPriority.ANL3;
+      setValue('priority', shift ? shift.priority : predefinedPriority);
       setShouldDisabled(false);
     }
-  }, [shift, type, setValue]);
+  }, [shift, type, setValue, settings.phase]);
 
   return (
     <Dialog

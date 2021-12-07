@@ -32,9 +32,10 @@ import {
 import { Profile } from '../../interfaces/auth.interface';
 
 // hooks
+import useProfileSummary from '../../hooks/useProfileSummary';
+import useSettings, { Phase } from '../../hooks/useSettings';
 import useShiftList from '../../hooks/useShiftList';
 import useUserList from '../../hooks/useUserList';
-import useProfileSummary from '../../hooks/useProfileSummary';
 
 // TODO: move to constants folder
 // form constants
@@ -108,6 +109,7 @@ const RosterForm: FC<RostersFormProps> = ({
   const [isPending, setIsPending] = useState(false);
   const [shouldDisabled, setShouldDisabled] = useState(false);
   const { setShiftDocument } = useShiftList();
+  const { settings } = useSettings();
   const { userList } = useUserList(rosterType);
   const { shiftsCount } = useProfileSummary(currentUid);
 
@@ -121,8 +123,8 @@ const RosterForm: FC<RostersFormProps> = ({
 
   const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
   const disabledShiftPriorities = () => {
-    const defaultDisabled: string[] = [ShiftType.X, ShiftType.ANL];
     const { priorities } = shiftsCount;
+    const defaultDisabled: string[] = [ShiftType.X];
     const isTYCAssigned = profile.tyc > 0;
     const isTYCUsed = priorities.TYC > 0;
     const isANL1Used = priorities.ANL1 > 0;
@@ -131,8 +133,8 @@ const RosterForm: FC<RostersFormProps> = ({
 
     if (profile.isAdmin) return [];
 
-    if (isANLType) {
-      let disabled = [...defaultDisabled, ShiftType.H];
+    if (isANLType && settings.phase !== Phase.B) {
+      let disabled = [...defaultDisabled, ShiftType.H, ShiftType.ANL];
       if (isANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
       if (isANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
       if (isTYCAssigned && isTYCUsed)
@@ -140,6 +142,18 @@ const RosterForm: FC<RostersFormProps> = ({
       if (!isTYCAssigned) disabled = [...disabled, ShiftPriority.TYC];
 
       return disabled;
+    }
+
+    if (isANLType && settings.phase === Phase.B) {
+      const disabled = [...defaultDisabled, ShiftType.H];
+      return [
+        ...disabled,
+        ShiftType.H,
+        ShiftPriority.ANL1,
+        ShiftPriority.ANL2,
+        ShiftPriority.ANL3,
+        ShiftPriority.TYC,
+      ];
     }
 
     return defaultDisabled;
@@ -224,10 +238,13 @@ const RosterForm: FC<RostersFormProps> = ({
       setShouldDisabled(true);
     }
     if (type === ShiftType.ANL) {
-      setValue('priority', ShiftPriority.ANL3);
+      setValue(
+        'priority',
+        settings.phase === Phase.B ? ShiftType.ANL : ShiftPriority.ANL3
+      );
       setShouldDisabled(false);
     }
-  }, [type, setValue]);
+  }, [type, setValue, settings.phase]);
 
   useEffect(() => {
     if (

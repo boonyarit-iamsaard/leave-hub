@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 // firebase
 import { firestoreDatabase } from '../firebase/config';
 import {
-  FirestoreError,
   collection,
   deleteDoc,
   doc,
+  FirestoreError,
   onSnapshot,
   setDoc,
 } from 'firebase/firestore';
@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 
 // hooks
 import useProfile from './useProfile';
+import useSettings, { Phase } from './useSettings';
 
 const useShiftList = (): {
   error: string | null;
@@ -26,6 +27,7 @@ const useShiftList = (): {
   shiftList: Shift[];
 } => {
   const { profile } = useProfile();
+  const { settings } = useSettings();
   const [shiftList, setShiftList] = useState<Shift[]>([] as Shift[]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,14 +85,14 @@ const useShiftList = (): {
       });
 
       setShiftList(
-        profile.isAdmin
+        profile.isAdmin || settings.phase === Phase.B
           ? shiftList
           : shiftList.filter(shift => shift.uid === profile.uid)
       );
     });
 
     return () => unsubscribe();
-  }, [profile.isAdmin, profile.uid, setShiftList]);
+  }, [profile.isAdmin, profile.uid, setShiftList, settings.phase]);
 
   return {
     error,
