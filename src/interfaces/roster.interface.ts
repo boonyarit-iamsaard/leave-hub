@@ -45,4 +45,5 @@ export enum ShiftPriority {
   ANL2 = 'ANL2',
   ANL3 = 'ANL3',
   TYC = 'TYC',
+  Carryover = 'Carryover',
 }

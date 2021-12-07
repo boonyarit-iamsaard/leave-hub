@@ -89,28 +89,36 @@ const ShiftForm: FC<ShiftFormProps> = ({
   const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
   const disabledShiftPriorities = () => {
     const { priorities } = shiftsCount;
+    const carryover = profile.carryover || 0;
+    const carryoverUsed = priorities.Carryover;
     const defaultDisabled: string[] = [ShiftType.X];
-    const isTYCAssigned = profile.tyc > 0;
-    const isTYCUsed = priorities.TYC > 0;
-    const isANL1Used = priorities.ANL1 > 0;
-    const isANL2Used = priorities.ANL2 > 0;
+    const hasANL1Used = priorities.ANL1 > 0;
+    const hasANL2Used = priorities.ANL2 > 0;
+    const hasCarryover = carryover > 0;
+    const hasTYC = profile.tyc > 0;
+    const hasTYCUsed = priorities.TYC > 0;
     const isANLType = type === ShiftType.ANL;
 
     if (profile.isAdmin) return [];
 
-    if (isANLType && settings.phase !== Phase.B) {
+    if (!hasCarryover) defaultDisabled.push(ShiftPriority.Carryover);
+
+    if (isANLType && settings.phase === Phase.A) {
       let disabled = [...defaultDisabled, ShiftType.H, ShiftType.ANL];
-      if (isANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
-      if (isANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
-      if (isTYCAssigned && isTYCUsed)
-        disabled = [...disabled, ShiftPriority.TYC];
-      if (!isTYCAssigned) disabled = [...disabled, ShiftPriority.TYC];
+      if (hasCarryover) disabled = [...disabled, ShiftPriority.Carryover];
+      if (hasANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
+      if (hasANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
+      if (hasTYC && hasTYCUsed) disabled = [...disabled, ShiftPriority.TYC];
+      if (!hasTYC) disabled = [...disabled, ShiftPriority.TYC];
 
       return disabled;
     }
 
     if (isANLType && settings.phase === Phase.B) {
-      const disabled = [...defaultDisabled, ShiftType.H];
+      const carryover = profile.carryover || 0;
+      let disabled = [...defaultDisabled, ShiftType.H];
+      if (hasCarryover && carryoverUsed >= carryover)
+        disabled = [...disabled, ShiftPriority.Carryover];
       return [
         ...disabled,
         ShiftType.H,
@@ -123,7 +131,6 @@ const ShiftForm: FC<ShiftFormProps> = ({
 
     return defaultDisabled;
   };
-
   const handleToggleConfirmDialog = () =>
     setConfirmDialogOpen(!confirmDialogOpen);
 

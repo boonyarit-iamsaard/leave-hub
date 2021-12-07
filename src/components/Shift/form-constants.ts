@@ -39,6 +39,7 @@ export const shiftPriorityOptions = [
   { value: ShiftPriority.ANL1, label: 'ANL1' },
   { value: ShiftPriority.ANL2, label: 'ANL2' },
   { value: ShiftPriority.ANL3, label: 'ANL3' },
+  { value: ShiftPriority.Carryover, label: 'Carryover' },
   { value: ShiftPriority.TYC, label: 'TYC' },
 ];
 

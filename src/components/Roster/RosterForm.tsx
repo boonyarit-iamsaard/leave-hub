@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { format, isBefore } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
@@ -68,6 +68,7 @@ const shiftPriorityOptions = [
   { value: ShiftPriority.ANL1, label: 'ANL1' },
   { value: ShiftPriority.ANL2, label: 'ANL2' },
   { value: ShiftPriority.ANL3, label: 'ANL3' },
+  { value: ShiftPriority.Carryover, label: 'Carryover' },
   { value: ShiftPriority.TYC, label: 'TYC' },
 ];
 const shiftStatusOptions = [
@@ -118,34 +119,55 @@ const RosterForm: FC<RostersFormProps> = ({
       ...defaultFormValues(profile, year, month),
     },
   });
-  const { handleSubmit, reset, watch, setValue } = methods;
+  const { handleSubmit, watch, setValue } = methods;
   const { startDate, endDate, type, createdAt, uid } = watch();
+
+  const handleResetForm = useCallback(() => {
+    const { isAdmin, roster } = profile;
+    const defaultValues = defaultFormValues(profile, year, month);
+
+    Object.keys(defaultValues).forEach(key => {
+      setValue(key as keyof Shift, defaultValues[key as keyof Shift]);
+    });
+
+    if (settings.phase === Phase.B) setValue('priority', ShiftType.ANL);
+
+    if (isAdmin && roster !== rosterType) setValue('uid', userList[0].uid);
+  }, [month, profile, rosterType, setValue, settings.phase, userList, year]);
 
   const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
   const disabledShiftPriorities = () => {
     const { priorities } = shiftsCount;
+    const carryover = profile.carryover || 0;
     const defaultDisabled: string[] = [ShiftType.X];
-    const isTYCAssigned = profile.tyc > 0;
-    const isTYCUsed = priorities.TYC > 0;
-    const isANL1Used = priorities.ANL1 > 0;
-    const isANL2Used = priorities.ANL2 > 0;
+    const hasANL1Used = priorities.ANL1 > 0;
+    const hasANL2Used = priorities.ANL2 > 0;
+    const hasCarryover = carryover > 0;
+    const carryoverUsed = priorities.Carryover;
+    const hasTYC = profile.tyc > 0;
+    const hasTYCUsed = priorities.TYC > 0;
     const isANLType = type === ShiftType.ANL;
 
     if (profile.isAdmin) return [];
 
-    if (isANLType && settings.phase !== Phase.B) {
+    if (!hasCarryover) defaultDisabled.push(ShiftPriority.Carryover);
+
+    if (isANLType && settings.phase === Phase.A) {
       let disabled = [...defaultDisabled, ShiftType.H, ShiftType.ANL];
-      if (isANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
-      if (isANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
-      if (isTYCAssigned && isTYCUsed)
-        disabled = [...disabled, ShiftPriority.TYC];
-      if (!isTYCAssigned) disabled = [...disabled, ShiftPriority.TYC];
+      if (hasCarryover) disabled = [...disabled, ShiftPriority.Carryover];
+      if (hasANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
+      if (hasANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
+      if (hasTYC && hasTYCUsed) disabled = [...disabled, ShiftPriority.TYC];
+      if (!hasTYC) disabled = [...disabled, ShiftPriority.TYC];
 
       return disabled;
     }
 
     if (isANLType && settings.phase === Phase.B) {
-      const disabled = [...defaultDisabled, ShiftType.H];
+      const carryover = profile.carryover || 0;
+      let disabled = [...defaultDisabled, ShiftType.H];
+      if (hasCarryover && carryoverUsed >= carryover)
+        disabled = [...disabled, ShiftPriority.Carryover];
       return [
         ...disabled,
         ShiftType.H,
@@ -160,23 +182,10 @@ const RosterForm: FC<RostersFormProps> = ({
   };
 
   const handleCloseForm = () => {
-    let uid = profile.uid;
-
-    if (profile.isAdmin && profile.roster !== rosterType) uid = userList[0].uid;
-
-    reset({
-      id: uuidv4(),
-      uid,
-      startDate: new Date(year, month),
-      endDate: new Date(year, month),
-      type: ShiftType.ANL,
-      roster: rosterType,
-      priority: ShiftPriority.ANL3,
-      status: ShiftStatus.Pending,
-    });
-
+    handleResetForm();
     handleDialogOpen();
   };
+
   const handleSubmitRosterForm = async (data: Shift) => {
     setIsPending(true);
     if (!data.createdAt) {
@@ -203,25 +212,13 @@ const RosterForm: FC<RostersFormProps> = ({
 
   useEffect(() => {
     if (shift) {
-      reset({ ...shift });
-    } else {
-      let uid = profile.uid;
-
-      if (profile.isAdmin && profile.roster !== rosterType)
-        uid = userList[0].uid;
-
-      reset({
-        id: uuidv4(),
-        uid,
-        startDate: new Date(year, month),
-        endDate: new Date(year, month),
-        type: ShiftType.ANL,
-        roster: rosterType,
-        priority: ShiftPriority.ANL3,
-        status: ShiftStatus.Pending,
+      Object.keys(shift).forEach(key => {
+        setValue(key as keyof Shift, shift[key as keyof Shift]);
       });
+    } else {
+      handleResetForm();
     }
-  }, [year, month, reset, profile, shift, rosterType, userList]);
+  }, [handleResetForm, setValue, shift]);
 
   useEffect(() => {
     if (isBefore(endDate, startDate)) setValue('endDate', startDate);
@@ -245,15 +242,6 @@ const RosterForm: FC<RostersFormProps> = ({
       setShouldDisabled(false);
     }
   }, [type, setValue, settings.phase]);
-
-  useEffect(() => {
-    if (
-      rosterType === RosterType.Engineer &&
-      profile.roster === RosterType.Mechanic
-    ) {
-      setValue('uid', userList[0].uid);
-    }
-  }, [rosterType, setValue, userList, profile]);
 
   useEffect(() => {
     if (uid) {

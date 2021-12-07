@@ -55,19 +55,13 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
   const methods = useForm<Profile>({
     defaultValues: { ...defaultValues },
   });
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, setValue } = methods;
 
   const handleCloseForm = () => {
-    reset({
-      uid: '',
-      firstName: '',
-      lastName: '',
-      isAdmin: false,
-      roster: RosterType.Mechanic,
-      entitled: 0,
-      tyc: 0,
-      carryover: 0,
+    Object.keys(defaultValues).forEach(key => {
+      setValue(key as keyof Profile, defaultValues[key as keyof Profile]);
     });
+
     handleDialogOpen();
   };
 
@@ -84,19 +78,16 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
 
   useEffect(() => {
     if (user) {
-      reset({ ...user, carryover: user.carryover || 0 });
-    } else
-      reset({
-        uid: '',
-        firstName: '',
-        lastName: '',
-        isAdmin: false,
-        roster: RosterType.Mechanic,
-        entitled: 0,
-        tyc: 0,
-        carryover: 0,
+      Object.keys(user).forEach(key => {
+        setValue(key as keyof Profile, user[key as keyof Profile]);
       });
-  }, [reset, user]);
+
+      if (!user.carryover) setValue('carryover', 0);
+    } else
+      Object.keys(defaultValues).forEach(key => {
+        setValue(key as keyof Profile, defaultValues[key as keyof Profile]);
+      });
+  }, [reset, setValue, user]);
 
   return (
     <Dialog

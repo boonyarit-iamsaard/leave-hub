@@ -53,6 +53,7 @@ const useProfileSummary = (
       ANL2: 0,
       ANL3: 0,
       TYC: 0,
+      Carryover: 0,
     },
   });
   const priorities = {
@@ -137,6 +138,7 @@ const useProfileSummary = (
       ANL2: 0,
       ANL3: 0,
       TYC: 0,
+      Carryover: 0,
     };
 
     filteredShifts.forEach(shift => {
@@ -144,10 +146,15 @@ const useProfileSummary = (
         let initialDate = shift.startDate;
         do {
           shifts[shift.type]++;
+
+          if (shift.priority === ShiftPriority.Carryover)
+            priorities.Carryover++;
+
           initialDate = addDays(initialDate, 1);
         } while (compareAsc(initialDate, shift.endDate) <= 0);
 
-        if (shift.priority) priorities[shift.priority]++;
+        if (shift.priority !== ShiftPriority.Carryover)
+          priorities[shift.priority]++;
       }
     });
 

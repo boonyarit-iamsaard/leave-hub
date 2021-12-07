@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { isSameDay } from 'date-fns';
 
-import { grey, indigo, yellow } from '@mui/material/colors';
+import { grey, indigo, purple, yellow } from '@mui/material/colors';
 
 import {
   Roster,
@@ -38,6 +38,7 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
     ANL2: theme.palette.info.main,
     ANL3: theme.palette.primary.main,
     ANL: yellow[300],
+    Carryover: purple[400],
     H: indigo[300],
     TYC: theme.palette.error.main,
     X: grey[400],
