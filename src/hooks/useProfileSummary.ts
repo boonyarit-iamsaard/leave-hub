@@ -41,19 +41,19 @@ const useProfileSummary = (
   const [filteredShifts, setFilteredShifts] = useState<Shift[]>([] as Shift[]);
   const [shiftsCount, setShiftsCount] = useState({
     shifts: {
-      X: 0,
       ANL: 0,
       H: 0,
+      X: 0,
     },
     priorities: {
-      X: 0,
-      ANL: 0,
-      H: 0,
       ANL1: 0,
       ANL2: 0,
       ANL3: 0,
-      TYC: 0,
+      ANL: 0,
       Carryover: 0,
+      H: 0,
+      TYC: 0,
+      X: 0,
     },
   });
   const priorities = {
@@ -86,11 +86,13 @@ const useProfileSummary = (
       },
       {
         label: 'Carryover',
-        value: profile.carryover ? profile.carryover : 0,
+        value: profile.carryover
+          ? profile.carryover - shiftsCount.priorities.Carryover
+          : 0,
         percentage: 'N/A',
       },
     ],
-    [profile, shiftsCount.shifts.ANL]
+    [profile, shiftsCount.shifts.ANL, shiftsCount.priorities.Carryover]
   );
 
   const prioritySummary = useCallback(
@@ -113,12 +115,12 @@ const useProfileSummary = (
       },
     ],
     [
-      profile.entitled,
       priorities.ANL1,
-      shiftsCount.priorities.ANL1,
       priorities.ANL2,
-      shiftsCount.priorities.ANL2,
       priorities.TYC,
+      profile.entitled,
+      shiftsCount.priorities.ANL1,
+      shiftsCount.priorities.ANL2,
       shiftsCount.priorities.TYC,
       shiftsCount.shifts.ANL,
     ]
@@ -126,29 +128,28 @@ const useProfileSummary = (
 
   const getShiftsCount = useCallback(() => {
     const shifts = {
-      X: 0,
       ANL: 0,
       H: 0,
+      X: 0,
     };
     const priorities = {
-      X: 0,
-      ANL: 0,
-      H: 0,
       ANL1: 0,
       ANL2: 0,
       ANL3: 0,
-      TYC: 0,
+      ANL: 0,
       Carryover: 0,
+      H: 0,
+      TYC: 0,
+      X: 0,
     };
 
     filteredShifts.forEach(shift => {
       if (shift.status !== ShiftStatus.Rejected) {
         let initialDate = shift.startDate;
         do {
-          shifts[shift.type]++;
-
-          if (shift.priority === ShiftPriority.Carryover)
-            priorities.Carryover++;
+          shift.priority === ShiftPriority.Carryover
+            ? priorities.Carryover++
+            : shifts[shift.type]++;
 
           initialDate = addDays(initialDate, 1);
         } while (compareAsc(initialDate, shift.endDate) <= 0);
