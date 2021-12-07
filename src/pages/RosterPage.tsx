@@ -11,12 +11,7 @@ import {
 import { Box, styled } from '@mui/system';
 
 // components
-import {
-  RosterContainer,
-  RosterForm,
-  RosterMode,
-  RosterShiftList,
-} from '../components/Roster';
+import { RosterContainer, RosterForm } from '../components/Roster';
 import { ConfirmDialog } from '../components/Common';
 
 // hooks
@@ -77,9 +72,6 @@ const RosterPage: FC = () => {
   const { profile } = useProfile();
   const { removeShiftDocument, shiftList } = useShiftList();
   const [isDeletePending, setIsDeletePending] = useState(false);
-  const [rosterMode, setRosterMode] = useState<RosterType | string>(
-    RosterType.Mechanic
-  );
   const [rosterType, setRosterType] = useState<RosterType>(RosterType.Mechanic);
   const [shift, setShift] = useState<Shift>({} as Shift);
   const [year, setYear] = useState(2022);
@@ -135,13 +127,6 @@ const RosterPage: FC = () => {
     setDialogOpen(!dialogOpen);
   };
 
-  const handleEditShift = (shift: Shift): void => {
-    setShift(shift);
-    setRosterType(shift.roster);
-    setEditMode(true);
-    setDialogOpen(!dialogOpen);
-  };
-
   const handleDialogOpen = () => {
     setEditMode(false);
     setShift({} as Shift);
@@ -172,13 +157,6 @@ const RosterPage: FC = () => {
   const handleMonthChange = (event: ChangeEvent<HTMLInputElement>) =>
     setMonth(Number(event.target.value));
 
-  const handleRosterModeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value !== 'All Leaves')
-      setRosterType(event.target.value as RosterType);
-
-    setRosterMode(event.target.value);
-  };
-
   useEffect(() => {
     const rosterBody = document.getElementById('roster-body');
     rosterBody?.scrollTo({
@@ -189,7 +167,6 @@ const RosterPage: FC = () => {
   }, [year, month]);
 
   useEffect(() => {
-    setRosterMode(profile.roster);
     setRosterType(profile.roster);
   }, [profile.roster]);
 
@@ -205,10 +182,27 @@ const RosterPage: FC = () => {
       />
 
       <RosterPageHeader style={{ marginBottom: 16 }}>
-        <Typography variant="h6">{rosterMode}</Typography>
+        <Typography variant="h6">{rosterType}</Typography>
 
         <Box>
-          <RosterMode mode={rosterMode} onChange={handleRosterModeChange} />
+          <Button
+            disabled={rosterType === RosterType.Engineer}
+            variant="outlined"
+            color="primary"
+            onClick={() => setRosterType(RosterType.Engineer)}
+            sx={{ mr: 2 }}
+          >
+            Engineer
+          </Button>
+          <Button
+            disabled={rosterType === RosterType.Mechanic}
+            variant="outlined"
+            color="primary"
+            onClick={() => setRosterType(RosterType.Mechanic)}
+            sx={{ mr: 2 }}
+          >
+            Mechanic
+          </Button>
           <Button
             className="shadow"
             variant="contained"
@@ -297,7 +291,7 @@ const RosterPage: FC = () => {
         year={year}
       />
 
-      {rosterMode === RosterType.Engineer && (
+      {rosterType === RosterType.Engineer && (
         <RosterContainer
           handleEditDialogOpen={handleEditDialogOpen}
           month={month}
@@ -306,20 +300,12 @@ const RosterPage: FC = () => {
         />
       )}
 
-      {rosterMode === RosterType.Mechanic && (
+      {rosterType === RosterType.Mechanic && (
         <RosterContainer
           handleEditDialogOpen={handleEditDialogOpen}
           month={month}
           year={year}
           rosterType={RosterType.Mechanic}
-        />
-      )}
-
-      {rosterMode === 'All Leaves' && (
-        <RosterShiftList
-          handleEditShift={handleEditShift}
-          month={month}
-          year={year}
         />
       )}
     </RosterPageContainer>

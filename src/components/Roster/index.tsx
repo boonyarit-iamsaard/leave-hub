@@ -2,6 +2,3 @@ export { default as RosterBody } from './RosterBody';
 export { default as RosterContainer } from './RosterContainer';
 export { default as RosterForm } from './RosterForm';
 export { default as RosterHeader } from './RosterHeader';
-export { default as RosterMode } from './RosterMode';
-export { default as RosterShiftList } from './RosterShiftList';
-export { default as RosterShiftListOptions } from './RosterShiftListOptions';
