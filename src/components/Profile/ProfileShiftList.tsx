@@ -41,6 +41,7 @@ const ProfileShiftList: FC<ProfileShiftListProps> = ({ selectedProfile }) => {
     open: false,
     selectedProfile: {} as Profile,
     shift: {} as Shift,
+    rosterType: selectedProfile.roster,
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {

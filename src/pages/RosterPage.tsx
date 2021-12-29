@@ -8,18 +8,20 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Box, styled } from '@mui/system';
+import { Box } from '@mui/system';
 
 // components
-import { RosterContainer, RosterForm } from '../components/Roster';
-import { ConfirmDialog } from '../components/Common';
+import { RosterContainer } from '../components/Roster';
+import { ShiftForm, ShiftFormMode } from '../components/Shift';
 
 // hooks
 import useDaysOff from '../hooks/useDaysOff';
 import useProfile from '../hooks/useProfile';
 import useShiftList from '../hooks/useShiftList';
+import useUserList from '../hooks/useUserList';
 
 // interfaces
+import { Profile } from '../interfaces/auth.interface';
 import {
   Roster,
   RosterType,
@@ -27,8 +29,8 @@ import {
   ShiftType,
 } from '../interfaces/roster.interface';
 
-import { ref, remove } from '@firebase/database';
-import { realtimeDatabase } from '../firebase/config';
+// styles
+import { RosterPageContainer, RosterPageHeader } from './RosterPage.style';
 
 const selectMonthOptions = [
   { value: 0, label: 'January' },
@@ -55,83 +57,22 @@ const selectYearOptions = (): { value: number; label: string }[] => {
   return yearOptions;
 };
 
-const RosterPageContainer = styled('div')(({ theme }) => ({
-  width: '100%',
-  maxWidth: theme.breakpoints.values.lg,
-  margin: '0 auto',
-}));
-
-const RosterPageHeader = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
-
 const RosterPage: FC = () => {
   const { findDayOff } = useDaysOff();
   const { profile } = useProfile();
-  const { removeShiftDocument, shiftList } = useShiftList();
-  const [isDeletePending, setIsDeletePending] = useState(false);
-  const [rosterType, setRosterType] = useState<RosterType>(RosterType.Mechanic);
-  const [shift, setShift] = useState<Shift>({} as Shift);
-  const [year, setYear] = useState(2022);
+  const { shiftList } = useShiftList();
+  const { userList } = useUserList();
+
   const [month, setMonth] = useState(0);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState({
+  const [rosterType, setRosterType] = useState<RosterType>(RosterType.Mechanic);
+  const [shiftForm, setShiftForm] = useState({
+    mode: ShiftFormMode.EDIT,
     open: false,
-    title: '',
-    message: '',
-    onConfirm: () =>
-      setConfirmDialog(prevState => ({ ...prevState, open: false })),
-    onClose: () =>
-      setConfirmDialog(prevState => ({ ...prevState, open: false })),
+    roster: rosterType,
+    selectedProfile: {} as Profile,
+    shift: {} as Shift,
   });
-  const [editMode, setEditMode] = useState(false);
-
-  const handleConfirmDialogOpen = (shift: Shift): void => {
-    setConfirmDialog(prevState => ({
-      ...prevState,
-      open: true,
-      title: 'Confirm',
-      message: 'Are you sure you want to delete this item?',
-      onConfirm: () => handleDeleteShift(shift),
-    }));
-  };
-
-  const handleDeleteShift = async (shift: Shift): Promise<void> => {
-    setIsDeletePending(true);
-    if (shift.type === ShiftType.X) {
-      const docRef = ref(realtimeDatabase, 'days-off/' + shift.id);
-      await remove(docRef);
-      setIsDeletePending(false);
-    } else {
-      await removeShiftDocument(shift);
-      setIsDeletePending(false);
-    }
-
-    setConfirmDialog(prevState => ({ ...prevState, open: false }));
-    setEditMode(false);
-    setShift({} as Shift);
-    setDialogOpen(!dialogOpen);
-  };
-
-  const handleEditDialogOpen = (roster: Roster) => {
-    let selectedShift: Shift | undefined;
-
-    roster.type === ShiftType.X
-      ? (selectedShift = findDayOff(roster))
-      : (selectedShift = shiftList.find(shift => shift.id === roster.shiftId));
-
-    selectedShift && setShift(selectedShift);
-    setEditMode(true);
-    setDialogOpen(!dialogOpen);
-  };
-
-  const handleDialogOpen = () => {
-    setEditMode(false);
-    setShift({} as Shift);
-    setDialogOpen(!dialogOpen);
-  };
+  const [year, setYear] = useState(2022);
 
   const handlePreviousClick = () => {
     if (month === 0) {
@@ -157,6 +98,51 @@ const RosterPage: FC = () => {
   const handleMonthChange = (event: ChangeEvent<HTMLInputElement>) =>
     setMonth(Number(event.target.value));
 
+  const handleRosterTypeChange = (updatedRosterType: RosterType) => {
+    setRosterType(updatedRosterType);
+    if (profile.isAdmin && profile.roster !== updatedRosterType) {
+      setShiftForm({
+        ...shiftForm,
+        roster: updatedRosterType,
+      });
+    }
+  };
+
+  const handleShiftFormClose = () => {
+    setShiftForm({
+      ...shiftForm,
+      open: false,
+    });
+  };
+
+  const handleClickAddNewShift = () => {
+    setShiftForm({
+      ...shiftForm,
+      open: true,
+      mode: ShiftFormMode.CREATE,
+      selectedProfile: profile,
+      shift: {} as Shift,
+    });
+  };
+
+  const handleClickEditShift = (roster: Roster) => {
+    const selectedProfile = userList.find(user => user.uid === roster.uid);
+    const selectedShift =
+      roster.type === ShiftType.X
+        ? findDayOff(roster)
+        : shiftList.find(shift => shift.id === roster.shiftId);
+
+    if (!selectedProfile || !selectedShift) return;
+
+    setShiftForm({
+      ...shiftForm,
+      open: true,
+      mode: ShiftFormMode.EDIT,
+      selectedProfile,
+      shift: selectedShift,
+    });
+  };
+
   useEffect(() => {
     const rosterBody = document.getElementById('roster-body');
     rosterBody?.scrollTo({
@@ -172,15 +158,6 @@ const RosterPage: FC = () => {
 
   return (
     <RosterPageContainer className="roster-page__container">
-      <ConfirmDialog
-        isConfirmPending={isDeletePending}
-        open={confirmDialog.open}
-        title={confirmDialog.title}
-        message={confirmDialog.message}
-        onClose={confirmDialog.onClose}
-        onConfirm={confirmDialog.onConfirm}
-      />
-
       <RosterPageHeader style={{ marginBottom: 16 }}>
         <Typography variant="h6">{rosterType}</Typography>
 
@@ -189,7 +166,7 @@ const RosterPage: FC = () => {
             disabled={rosterType === RosterType.Engineer}
             variant="outlined"
             color="primary"
-            onClick={() => setRosterType(RosterType.Engineer)}
+            onClick={() => handleRosterTypeChange(RosterType.Engineer)}
             sx={{ mr: 2 }}
           >
             Engineer
@@ -198,7 +175,7 @@ const RosterPage: FC = () => {
             disabled={rosterType === RosterType.Mechanic}
             variant="outlined"
             color="primary"
-            onClick={() => setRosterType(RosterType.Mechanic)}
+            onClick={() => handleRosterTypeChange(RosterType.Mechanic)}
             sx={{ mr: 2 }}
           >
             Mechanic
@@ -207,7 +184,7 @@ const RosterPage: FC = () => {
             className="shadow"
             variant="contained"
             color="primary"
-            onClick={handleDialogOpen}
+            onClick={handleClickAddNewShift}
           >
             New
           </Button>
@@ -279,21 +256,16 @@ const RosterPage: FC = () => {
         </Button>
       </Box>
 
-      <RosterForm
-        dialogOpen={dialogOpen}
-        handleConfirmDialog={handleConfirmDialogOpen}
-        handleDialogOpen={handleDialogOpen}
-        isDeletePending={isDeletePending}
+      <ShiftForm
+        handleClose={handleShiftFormClose}
         month={month}
-        profile={profile}
-        rosterType={rosterType}
-        shift={editMode ? shift : undefined}
         year={year}
+        {...shiftForm}
       />
 
       {rosterType === RosterType.Engineer && (
         <RosterContainer
-          handleEditDialogOpen={handleEditDialogOpen}
+          handleEditDialogOpen={handleClickEditShift}
           month={month}
           year={year}
           rosterType={RosterType.Engineer}
@@ -302,7 +274,7 @@ const RosterPage: FC = () => {
 
       {rosterType === RosterType.Mechanic && (
         <RosterContainer
-          handleEditDialogOpen={handleEditDialogOpen}
+          handleEditDialogOpen={handleClickEditShift}
           month={month}
           year={year}
           rosterType={RosterType.Mechanic}

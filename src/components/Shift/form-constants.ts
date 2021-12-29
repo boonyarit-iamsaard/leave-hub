@@ -1,6 +1,5 @@
 import { Profile } from '../../interfaces/auth.interface';
 import {
-  RosterType,
   Shift,
   ShiftPriority,
   ShiftStatus,
@@ -18,10 +17,7 @@ export const defaultFormValues = (
   startDate: new Date(year, month),
   endDate: new Date(year, month),
   type: ShiftType.ANL,
-  roster:
-    profile.roster === RosterType.Mechanic
-      ? RosterType.Mechanic
-      : RosterType.Engineer,
+  roster: profile.roster,
   priority: ShiftPriority.ANL3,
   status: ShiftStatus.Pending,
 });

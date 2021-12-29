@@ -19,6 +19,7 @@ import { realtimeDatabase } from '../../firebase/config';
 import { InputDatepicker, InputSelect } from '../Input';
 
 import {
+  RosterType,
   Shift,
   ShiftPriority,
   ShiftStatus,
@@ -55,10 +56,9 @@ interface ShiftFormProps {
   selectedProfile: Profile;
   shift: Shift;
   year?: number;
+  roster?: RosterType;
 }
 
-// TODO: reuse this component in roster page
-// TODO: add create mode functionality
 const ShiftForm: FC<ShiftFormProps> = ({
   handleClose,
   mode = ShiftFormMode.EDIT,
@@ -67,6 +67,7 @@ const ShiftForm: FC<ShiftFormProps> = ({
   year = 2022,
   month = 0,
   shift,
+  roster,
 }) => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [isDeletePending, setIsDeletePending] = useState(false);
@@ -76,7 +77,7 @@ const ShiftForm: FC<ShiftFormProps> = ({
   const { removeShiftDocument, setShiftDocument } = useShiftList();
   const { settings } = useSettings();
   const { shiftsCount } = useProfileSummary(selectedProfile.uid);
-  const { userList } = useUserList();
+  const { userList } = useUserList(roster);
 
   const methods = useForm<Shift>({
     defaultValues: {
@@ -105,6 +106,7 @@ const ShiftForm: FC<ShiftFormProps> = ({
 
     if (isANLType && settings.phase === Phase.A) {
       let disabled = [...defaultDisabled, ShiftType.H, ShiftType.ANL];
+
       if (hasCarryover) disabled = [...disabled, ShiftPriority.Carryover];
       if (hasANL1Used) disabled = [...disabled, ShiftPriority.ANL1];
       if (hasANL2Used) disabled = [...disabled, ShiftPriority.ANL2];
@@ -131,6 +133,7 @@ const ShiftForm: FC<ShiftFormProps> = ({
 
     return defaultDisabled;
   };
+
   const handleToggleConfirmDialog = () =>
     setConfirmDialogOpen(!confirmDialogOpen);
 
@@ -175,7 +178,7 @@ const ShiftForm: FC<ShiftFormProps> = ({
   };
 
   useEffect(() => {
-    if (mode === ShiftFormMode.EDIT && !!Object.keys(shift).length) {
+    if (mode === ShiftFormMode.EDIT) {
       Object.keys(shift).forEach(key => {
         setValue(key as keyof Shift, shift[key as keyof Shift]);
       });
@@ -199,10 +202,42 @@ const ShiftForm: FC<ShiftFormProps> = ({
     if (type === ShiftType.ANL) {
       const predefinedPriority =
         settings.phase === Phase.B ? ShiftType.ANL : ShiftPriority.ANL3;
-      setValue('priority', shift ? shift.priority : predefinedPriority);
+      setValue(
+        'priority',
+        shift && shift.priority ? shift.priority : predefinedPriority
+      );
       setShouldDisabled(false);
     }
   }, [shift, type, setValue, settings.phase]);
+
+  useEffect(() => {
+    if (
+      profile.isAdmin &&
+      profile.roster !== roster &&
+      mode === ShiftFormMode.CREATE
+    ) {
+      setValue('uid', userList[0].uid);
+      setValue('roster', userList[0].roster);
+    } else {
+      setValue('uid', selectedProfile.uid);
+      setValue('roster', selectedProfile.roster);
+    }
+  }, [
+    mode,
+    profile,
+    roster,
+    selectedProfile.roster,
+    selectedProfile.uid,
+    setValue,
+    userList,
+  ]);
+
+  useEffect(() => {
+    if (mode === ShiftFormMode.CREATE) {
+      setValue('startDate', new Date(year, month));
+      setValue('endDate', new Date(year, month));
+    }
+  }, [mode, month, setValue, year]);
 
   return (
     <Dialog
@@ -238,12 +273,14 @@ const ShiftForm: FC<ShiftFormProps> = ({
             className="shift-form_content"
             sx={{ width: '100%', mx: 'auto', p: 2 }}
           >
-            <InputSelect
-              label="User"
-              name="uid"
-              options={userListOptions(userList)}
-              shouldDisabled={mode === ShiftFormMode.EDIT}
-            />
+            {profile.isAdmin && (
+              <InputSelect
+                label="User"
+                name="uid"
+                options={userListOptions(userList)}
+                shouldDisabled={mode === ShiftFormMode.EDIT}
+              />
+            )}
             <InputDatepicker
               label="Start Date"
               name="startDate"
