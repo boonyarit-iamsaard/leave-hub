@@ -57,7 +57,7 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
   const methods = useForm<Profile>({
     defaultValues: { ...defaultValues },
   });
-  const { handleSubmit, reset, setValue, watch } = methods;
+  const { handleSubmit, reset, setValue } = methods;
 
   const handleCloseForm = () => {
     Object.keys(defaultValues).forEach(key => {
@@ -92,8 +92,6 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
         setValue(key as keyof Profile, defaultValues[key as keyof Profile]);
       });
   }, [reset, setValue, user]);
-
-  console.log('AdminUserForm-watch => ', watch());
 
   return (
     <Dialog

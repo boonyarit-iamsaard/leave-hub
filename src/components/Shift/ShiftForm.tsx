@@ -292,11 +292,6 @@ const ShiftForm: FC<ShiftFormProps> = ({
     }
   }, [mode, month, setValue, year]);
 
-  console.log('ShiftForm-roster => ', roster);
-  console.log('ShiftForm-watch => ', watch());
-  console.log('ShiftForm-shift => ', shift);
-  console.log('ShiftForm-shiftsCount => ', shiftsCount);
-
   return (
     <Dialog
       onClose={handleResetShiftForm}

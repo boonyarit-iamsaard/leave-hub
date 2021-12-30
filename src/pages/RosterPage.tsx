@@ -145,9 +145,6 @@ const RosterPage: FC = () => {
     setRosterType(profile.roster);
   }, [profile.roster]);
 
-  console.log('RosterPage-shiftForm => ', shiftForm);
-  console.log('RosterPage-profile => ', profile);
-
   return (
     <RosterPageContainer className="roster-page__container">
       <RosterPageHeader style={{ marginBottom: 16 }}>
