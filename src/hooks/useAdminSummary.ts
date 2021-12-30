@@ -4,6 +4,7 @@ import { addDays, compareAsc } from 'date-fns';
 import { Profile } from '../interfaces/auth.interface';
 import {
   RosterType,
+  ShiftPriority,
   ShiftStatus,
   ShiftType,
 } from '../interfaces/roster.interface';
@@ -29,9 +30,11 @@ const useAdminSummary = (
     userList.forEach(user => {
       const shifts = shiftList.filter(
         shift =>
-          shift.uid === user.uid &&
+          shift.priority !== ShiftPriority.Carryover &&
+          shift.priority !== ShiftPriority.Vaccination &&
           shift.status !== ShiftStatus.Rejected &&
-          shift.type !== ShiftType.H
+          shift.type !== ShiftType.H &&
+          shift.uid === user.uid
       );
       let total = 0;
 
