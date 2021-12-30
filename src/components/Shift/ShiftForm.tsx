@@ -90,15 +90,19 @@ const ShiftForm: FC<ShiftFormProps> = ({
   const disabledShiftTypes = profile.isAdmin ? [] : [ShiftType.X];
   const disabledShiftPriorities = () => {
     const { priorities } = shiftsCount;
+    const booserVaccinationLeaveUsed = priorities.Vaccination;
+    const boosterVaccinationLeave = profile.boosterVaccinationLeave || 0;
     const carryover = profile.carryover || 0;
     const carryoverUsed = priorities.Carryover;
     const defaultDisabled: string[] = [ShiftType.X];
     const hasANL1Used = priorities.ANL1 > 0;
     const hasANL2Used = priorities.ANL2 > 0;
+    const hasBoosterVaccinationLeave = boosterVaccinationLeave > 0;
     const hasCarryover = carryover > 0;
     const hasTYC = profile.tyc > 0;
     const hasTYCUsed = priorities.TYC > 0;
     const isANLType = type === ShiftType.ANL;
+    const isOtherType = type === ShiftType.Other;
 
     if (profile.isAdmin) return [];
 
@@ -119,8 +123,10 @@ const ShiftForm: FC<ShiftFormProps> = ({
     if (isANLType && settings.phase === Phase.B) {
       const carryover = profile.carryover || 0;
       let disabled = [...defaultDisabled, ShiftType.H];
+
       if (hasCarryover && carryoverUsed >= carryover)
         disabled = [...disabled, ShiftPriority.Carryover];
+
       return [
         ...disabled,
         ShiftType.H,
@@ -129,6 +135,29 @@ const ShiftForm: FC<ShiftFormProps> = ({
         ShiftPriority.ANL3,
         ShiftPriority.TYC,
       ];
+    }
+
+    if (isOtherType) {
+      const boosterVaccinationLeave = profile.boosterVaccinationLeave || 0;
+      let disabled = [
+        ...defaultDisabled,
+        ShiftType.H,
+        ShiftType.ANL,
+        ShiftPriority.ANL1,
+        ShiftPriority.ANL2,
+        ShiftPriority.ANL3,
+        ShiftPriority.TYC,
+      ];
+
+      if (
+        hasBoosterVaccinationLeave &&
+        booserVaccinationLeaveUsed >= boosterVaccinationLeave
+      )
+        disabled = [...disabled, ShiftPriority.Vaccination];
+      if (!hasBoosterVaccinationLeave)
+        disabled = [...disabled, ShiftPriority.Vaccination];
+
+      return disabled;
     }
 
     return defaultDisabled;
@@ -149,7 +178,7 @@ const ShiftForm: FC<ShiftFormProps> = ({
     }
 
     handleToggleConfirmDialog();
-    handleClose();
+    handleResetShiftForm();
   };
 
   const handleSubmitShiftForm = async (shift: Shift) => {
@@ -173,6 +202,23 @@ const ShiftForm: FC<ShiftFormProps> = ({
       await setShiftDocument(shift);
       setIsPending(false);
     }
+
+    handleResetShiftForm();
+  };
+
+  const handleResetShiftForm = () => {
+    const defaultValues = defaultFormValues(selectedProfile, year, month);
+    if (profile.isAdmin && profile.roster !== roster) {
+      defaultValues.uid = userList[0].uid;
+      defaultValues.roster = userList[0].roster;
+    }
+    if (settings.phase === Phase.B) {
+      defaultValues.priority = ShiftType.ANL;
+    }
+
+    Object.keys(defaultValues).forEach(key => {
+      setValue(key as keyof Shift, defaultValues[key as keyof Shift]);
+    });
 
     handleClose();
   };
@@ -208,6 +254,13 @@ const ShiftForm: FC<ShiftFormProps> = ({
       );
       setShouldDisabled(false);
     }
+    if (type === ShiftType.Other) {
+      setValue(
+        'priority',
+        shift && shift.priority ? shift.priority : ShiftType.Other
+      );
+      setShouldDisabled(false);
+    }
   }, [shift, type, setValue, settings.phase]);
 
   useEffect(() => {
@@ -239,9 +292,14 @@ const ShiftForm: FC<ShiftFormProps> = ({
     }
   }, [mode, month, setValue, year]);
 
+  console.log('ShiftForm-roster => ', roster);
+  console.log('ShiftForm-watch => ', watch());
+  console.log('ShiftForm-shift => ', shift);
+  console.log('ShiftForm-shiftsCount => ', shiftsCount);
+
   return (
     <Dialog
-      onClose={handleClose}
+      onClose={handleResetShiftForm}
       open={open}
       className="shift-form"
       sx={{

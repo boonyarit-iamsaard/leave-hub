@@ -23,20 +23,23 @@ export const defaultFormValues = (
 });
 
 export const shiftTypeOptions = [
-  { value: ShiftType.X, label: 'X' },
   { value: ShiftType.ANL, label: 'ANL' },
   { value: ShiftType.H, label: 'H' },
+  { value: ShiftType.Other, label: 'Other' },
+  { value: ShiftType.X, label: 'X' },
 ];
 
 export const shiftPriorityOptions = [
-  { value: ShiftType.X, label: 'X' },
-  { value: ShiftType.ANL, label: 'ANL' },
-  { value: ShiftType.H, label: 'H' },
   { value: ShiftPriority.ANL1, label: 'ANL1' },
   { value: ShiftPriority.ANL2, label: 'ANL2' },
   { value: ShiftPriority.ANL3, label: 'ANL3' },
   { value: ShiftPriority.Carryover, label: 'Carryover' },
   { value: ShiftPriority.TYC, label: 'TYC' },
+  { value: ShiftPriority.Vaccination, label: 'Vaccination' },
+  { value: ShiftType.ANL, label: 'ANL' },
+  { value: ShiftType.H, label: 'H' },
+  { value: ShiftType.Other, label: 'Other' },
+  { value: ShiftType.X, label: 'X' },
 ];
 
 export const shiftStatusOptions = [

@@ -48,6 +48,7 @@ const AdminUserList: FC<AdminUserListProps> = ({
     used: summary.total,
     tyc: summary.user.tyc,
     carryover: summary.user.carryover || 0,
+    boosterVaccinationLeave: summary.user.boosterVaccinationLeave || 0,
     options: summary.user,
   }));
 
@@ -90,6 +91,12 @@ const AdminUserList: FC<AdminUserListProps> = ({
     {
       field: 'tyc',
       headerName: 'TYC',
+      minWidth: 80,
+      flex: 1,
+    },
+    {
+      field: 'boosterVaccinationLeave',
+      headerName: 'Booster Leave',
       minWidth: 80,
       flex: 1,
     },

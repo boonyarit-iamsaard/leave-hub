@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { isSameDay } from 'date-fns';
 
-import { grey, indigo, purple, yellow } from '@mui/material/colors';
+import { amber, grey, indigo, purple, yellow } from '@mui/material/colors';
 
 import {
   Roster,
   ShiftPriority,
   ShiftStatus,
+  ShiftType,
 } from '../../interfaces/roster.interface';
 
 import { RosterCell } from './Roster.style';
@@ -41,7 +42,17 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
     Carryover: purple[400],
     H: indigo[300],
     TYC: theme.palette.error.main,
+    Vaccination: amber[500],
+    Other: amber[500],
     X: grey[400],
+  };
+
+  const shiftLabel = (): ShiftType | string => {
+    if (!shift) return '';
+
+    return shift && shift.priority !== ShiftPriority.Vaccination
+      ? shift.type
+      : 'VCL';
   };
 
   const handlerClickCell = () => {
@@ -65,7 +76,7 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
                 : theme.palette.text.primary,
           }}
         >
-          {shift ? shift.type : ''}
+          {shiftLabel()}
         </RosterCell>
       </Badge>
     </Tooltip>
@@ -82,7 +93,7 @@ const RosterBodyCell: FC<RosterBodyCellProps> = ({
             : theme.palette.text.primary,
       }}
     >
-      {shift ? shift.type : ''}
+      {shiftLabel()}
     </RosterCell>
   );
 };

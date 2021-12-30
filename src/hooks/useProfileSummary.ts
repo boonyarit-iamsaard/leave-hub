@@ -43,6 +43,7 @@ const useProfileSummary = (
     shifts: {
       ANL: 0,
       H: 0,
+      Other: 0,
       X: 0,
     },
     priorities: {
@@ -52,7 +53,9 @@ const useProfileSummary = (
       ANL: 0,
       Carryover: 0,
       H: 0,
+      Other: 0,
       TYC: 0,
+      Vaccination: 0,
       X: 0,
     },
   });
@@ -91,8 +94,20 @@ const useProfileSummary = (
           : 0,
         percentage: 'N/A',
       },
+      {
+        label: 'Vaccination',
+        value: profile.boosterVaccinationLeave
+          ? profile.boosterVaccinationLeave - shiftsCount.priorities.Vaccination
+          : 0,
+        percentage: 'N/A',
+      },
     ],
-    [profile, shiftsCount.shifts.ANL, shiftsCount.priorities.Carryover]
+    [
+      profile,
+      shiftsCount.priorities.Carryover,
+      shiftsCount.priorities.Vaccination,
+      shiftsCount.shifts.ANL,
+    ]
   );
 
   const prioritySummary = useCallback(
@@ -130,6 +145,7 @@ const useProfileSummary = (
     const shifts = {
       ANL: 0,
       H: 0,
+      Other: 0,
       X: 0,
     };
     const priorities = {
@@ -139,7 +155,9 @@ const useProfileSummary = (
       ANL: 0,
       Carryover: 0,
       H: 0,
+      Other: 0,
       TYC: 0,
+      Vaccination: 0,
       X: 0,
     };
 

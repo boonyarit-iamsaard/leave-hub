@@ -40,7 +40,9 @@ const defaultValues: Profile = {
   entitled: 0,
   tyc: 0,
   carryover: 0,
+  boosterVaccinationLeave: 0,
 };
+
 const rosterTypeOptions = [
   { value: RosterType.Mechanic, label: 'Mechanic' },
   { value: RosterType.Engineer, label: 'Engineer' },
@@ -55,7 +57,7 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
   const methods = useForm<Profile>({
     defaultValues: { ...defaultValues },
   });
-  const { handleSubmit, reset, setValue } = methods;
+  const { handleSubmit, reset, setValue, watch } = methods;
 
   const handleCloseForm = () => {
     Object.keys(defaultValues).forEach(key => {
@@ -71,6 +73,7 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
       tyc: Number(data.tyc),
       entitled: Number(data.entitled),
       carryover: Number(data.carryover),
+      boosterVaccinationLeave: Number(data.boosterVaccinationLeave),
     }).then(() => {
       handleCloseForm();
     });
@@ -83,11 +86,14 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
       });
 
       if (!user.carryover) setValue('carryover', 0);
+      if (!user.boosterVaccinationLeave) setValue('boosterVaccinationLeave', 0);
     } else
       Object.keys(defaultValues).forEach(key => {
         setValue(key as keyof Profile, defaultValues[key as keyof Profile]);
       });
   }, [reset, setValue, user]);
+
+  console.log('AdminUserForm-watch => ', watch());
 
   return (
     <Dialog
@@ -133,7 +139,13 @@ const AdminUserForm: FC<AdminUserFormProps> = ({
 
             <InputTextField name="tyc" label="TYC Entitled" type="number" />
 
-            <InputTextField name="carryover" label="Carryover?" type="number" />
+            <InputTextField name="carryover" label="Carryover" type="number" />
+
+            <InputTextField
+              name="boosterVaccinationLeave"
+              label="Booster Vaccination Leave"
+              type="number"
+            />
           </DialogContent>
 
           <Divider />

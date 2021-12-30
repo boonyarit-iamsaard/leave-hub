@@ -68,7 +68,6 @@ const RosterPage: FC = () => {
   const [shiftForm, setShiftForm] = useState({
     mode: ShiftFormMode.EDIT,
     open: false,
-    roster: rosterType,
     selectedProfile: {} as Profile,
     shift: {} as Shift,
   });
@@ -98,19 +97,10 @@ const RosterPage: FC = () => {
   const handleMonthChange = (event: ChangeEvent<HTMLInputElement>) =>
     setMonth(Number(event.target.value));
 
-  const handleRosterTypeChange = (updatedRosterType: RosterType) => {
-    setRosterType(updatedRosterType);
-    if (profile.isAdmin && profile.roster !== updatedRosterType) {
-      setShiftForm({
-        ...shiftForm,
-        roster: updatedRosterType,
-      });
-    }
-  };
-
   const handleShiftFormClose = () => {
     setShiftForm({
       ...shiftForm,
+      shift: {} as Shift,
       open: false,
     });
   };
@@ -121,7 +111,6 @@ const RosterPage: FC = () => {
       open: true,
       mode: ShiftFormMode.CREATE,
       selectedProfile: profile,
-      shift: {} as Shift,
     });
   };
 
@@ -156,6 +145,9 @@ const RosterPage: FC = () => {
     setRosterType(profile.roster);
   }, [profile.roster]);
 
+  console.log('RosterPage-shiftForm => ', shiftForm);
+  console.log('RosterPage-profile => ', profile);
+
   return (
     <RosterPageContainer className="roster-page__container">
       <RosterPageHeader style={{ marginBottom: 16 }}>
@@ -166,7 +158,7 @@ const RosterPage: FC = () => {
             disabled={rosterType === RosterType.Engineer}
             variant="outlined"
             color="primary"
-            onClick={() => handleRosterTypeChange(RosterType.Engineer)}
+            onClick={() => setRosterType(RosterType.Engineer)}
             sx={{ mr: 2 }}
           >
             Engineer
@@ -175,7 +167,7 @@ const RosterPage: FC = () => {
             disabled={rosterType === RosterType.Mechanic}
             variant="outlined"
             color="primary"
-            onClick={() => handleRosterTypeChange(RosterType.Mechanic)}
+            onClick={() => setRosterType(RosterType.Mechanic)}
             sx={{ mr: 2 }}
           >
             Mechanic
@@ -258,6 +250,7 @@ const RosterPage: FC = () => {
 
       <ShiftForm
         handleClose={handleShiftFormClose}
+        roster={rosterType}
         month={month}
         year={year}
         {...shiftForm}

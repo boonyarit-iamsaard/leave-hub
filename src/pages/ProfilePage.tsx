@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 // mui
-import { Box, Card, Divider, Typography } from '@mui/material';
+import { Box, Card, Divider, Grid, Typography } from '@mui/material';
 
 // hooks
 import useProfile from '../hooks/useProfile';
@@ -49,7 +49,7 @@ const ProfilePage: FC = () => {
         <Typography variant="h6">Profile</Typography>
       </Box>
       <ProfilePageSummaryContainer>
-        <Card className="shadow" sx={{ mb: 2, px: 4, py: 2 }}>
+        <Card className="shadow" sx={{ mb: 2, px: 2, pt: 2, pb: 0 }}>
           <Box sx={{ textAlign: 'center', mb: 2 }}>
             {selectedProfile ? (
               <Typography variant="h6">
@@ -60,25 +60,16 @@ const ProfilePage: FC = () => {
             )}
           </Box>
           <Divider sx={{ mb: 2 }} />
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: {
-                xs: 'column',
-                sm: 'row',
-              },
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
+          <Grid container spacing={2}>
             {profile &&
               profileSummary().map(detail => (
-                <Box
+                <Grid
+                  textAlign="center"
+                  pb={2}
+                  item
+                  xs={12}
+                  sm={3}
                   key={detail.label}
-                  sx={{
-                    textAlign: 'center',
-                    mb: { xs: 1, sm: 0 },
-                  }}
                 >
                   <Typography color="grey.600" variant="body1">
                     {detail.label}
@@ -90,37 +81,27 @@ const ProfilePage: FC = () => {
                     ({detail.percentage ? detail.percentage : 0} %)
                   </Typography>
                   <Typography variant="body2">days</Typography>
-                </Box>
+                </Grid>
               ))}
-          </Box>
+          </Grid>
         </Card>
         <Card className="shadow" sx={{ px: 4, py: 2 }}>
           <Box sx={{ textAlign: 'center', mb: 2 }}>
             <Typography variant="h6">Priorities</Typography>
           </Box>
           <Divider sx={{ mb: 2 }} />
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexDirection: { xs: 'column', sm: 'row' },
-            }}
-          >
+          <Grid container spacing={2}>
             {prioritySummary().map(detail => (
-              <Box
-                key={detail.label}
-                sx={{ textAlign: 'center', mb: { xs: 1, sm: 0 } }}
-              >
+              <Grid textAlign="center" item xs={12} sm={3} key={detail.label}>
                 <Typography color="grey.600" variant="body1">
                   {detail.label}
                 </Typography>
                 <Typography color="grey.800" variant="h6">
                   {detail.value ? detail.value : 0}
                 </Typography>
-              </Box>
+              </Grid>
             ))}
-          </Box>
+          </Grid>
         </Card>
       </ProfilePageSummaryContainer>
       <ProfileShiftList

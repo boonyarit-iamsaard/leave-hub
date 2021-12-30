@@ -23,6 +23,8 @@ export interface UserCredential {
 }
 
 export interface Profile {
+  boosterVaccinationLeave?: number;
+  carryover?: number;
   entitled: number;
   firstName: string;
   isAdmin: boolean;
@@ -30,5 +32,4 @@ export interface Profile {
   roster: RosterType;
   tyc: number;
   uid: string;
-  carryover?: number;
 }

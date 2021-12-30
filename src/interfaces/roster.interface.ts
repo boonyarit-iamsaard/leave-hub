@@ -34,9 +34,10 @@ export enum ShiftStatus {
 }
 
 export enum ShiftType {
-  X = 'X',
   ANL = 'ANL',
   H = 'H',
+  Other = 'Other',
+  X = 'X',
 }
 
 // must be use in conjunction with ShiftType
@@ -44,6 +45,7 @@ export enum ShiftPriority {
   ANL1 = 'ANL1',
   ANL2 = 'ANL2',
   ANL3 = 'ANL3',
-  TYC = 'TYC',
   Carryover = 'Carryover',
+  TYC = 'TYC',
+  Vaccination = 'Vaccination',
 }
