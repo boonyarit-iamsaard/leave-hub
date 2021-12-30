@@ -96,7 +96,7 @@ const AdminUserList: FC<AdminUserListProps> = ({
     },
     {
       field: 'boosterVaccinationLeave',
-      headerName: 'Booster Leave',
+      headerName: 'Vaccination Leave',
       minWidth: 80,
       flex: 1,
     },

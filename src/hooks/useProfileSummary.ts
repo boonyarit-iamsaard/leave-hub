@@ -95,7 +95,7 @@ const useProfileSummary = (
         percentage: 'N/A',
       },
       {
-        label: 'Vaccination',
+        label: 'Vaccination Leave',
         value: profile.boosterVaccinationLeave
           ? profile.boosterVaccinationLeave - shiftsCount.priorities.Vaccination
           : 0,
